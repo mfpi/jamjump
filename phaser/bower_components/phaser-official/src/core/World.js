@@ -33,6 +33,8 @@ Phaser.World = function (game) {
     * @property {Phaser.Camera} camera - Camera instance.
     */
     this.camera = null;
+    this.camera2 = null;
+    this.camera3 = null;
 
 };
 
@@ -47,15 +49,26 @@ Phaser.World.prototype.constructor = Phaser.World;
 */
 Phaser.World.prototype.boot = function () {
 
-    this.camera = new Phaser.Camera(this.game, 0, 0, 0, this.game.width, this.game.height);
+    this.camera3 = new Phaser.Camera(this.game, 0, 0, 0, this.game.width, this.game.height);
 
-    this.camera.displayObject = this;
+    this.camera2 = new Phaser.Camera(this.game, 0, 0, 0, this.game.width, this.game.height);
 
-    this.camera.scale = this.scale;
+    var stage = new Phaser.Stage(this.game, this.game.width, this.game.height);
+    this.camera3.displayObject = stage;
+    stage.addChild(this);
 
-    this.game.camera = this.camera;
+    var stage2 = new Phaser.Stage(this.game, this.game.width, this.game.height);
+    this.camera2.displayObject = stage2;
+    stage2.addChild(this);
 
-    this.game.stage.addChild(this);
+    this.camera3.scale = this.scale;
+    this.camera2.scale = this.scale;
+
+    this.game.camera3 = this.camera3;
+    this.game.camera2 = this.camera2;
+
+    //this.game.stage.addChild(stage);
+    //this.game.stage.addChild(stage2);
 
 };
 
@@ -82,10 +95,15 @@ Phaser.World.prototype.setBounds = function (x, y, width, height) {
 
     this.bounds.setTo(x, y, width, height);
 
-    if (this.camera.bounds)
+    if (this.camera3.bounds)
     {
         //  The Camera can never be smaller than the game size
-        this.camera.bounds.setTo(x, y, width, height);
+        this.camera3.bounds.setTo(x, y, width, height);
+    }
+    
+    if (this.camera2.bounds)
+    {
+        this.camera2.bounds.setTo(x, y, width, height);
     }
 
     this.game.physics.setBoundsToWorld();

@@ -190,6 +190,8 @@ Phaser.Game = function (width, height, renderer, parent, state, transparent, ant
     * @property {Phaser.Physics.PhysicsManager} camera - A handy reference to world.camera.
     */
     this.camera = null;
+    this.camera2 = null;
+    this.camera3 = null;
 
     /**
     * @property {HTMLCanvasElement} canvas - A handy reference to renderer.view, the canvas that the game is being rendered in to.
@@ -597,9 +599,8 @@ Phaser.Game.prototype = {
     * @protected
     * @param {number} time - The current time as provided by RequestAnimationFrame.
     */
-    update: function (time) {
+    update_base: function (time) {
 
-        this.time.update(time);
 
         if (!this._paused && !this.pendingStep)
         {
@@ -607,38 +608,89 @@ Phaser.Game.prototype = {
             {
                 this.pendingStep = true;
             }
+            //this.stage.preUpdate();
+            // this.camera3.displayObject.preUpdate();
 
-            this.debug.preUpdate();
-            this.physics.preUpdate();
-            this.state.preUpdate();
-            this.plugins.preUpdate();
-            this.stage.preUpdate();
-
-            this.stage.update();
-            this.tweens.update();
-            this.sound.update();
-            this.input.update();
-            this.state.update();
-            this.physics.update();
-            this.particles.update();
-            this.plugins.update();
-
-            this.stage.postUpdate();
-            this.plugins.postUpdate();
+            //this.stage.update();
+            // this.camera3.displayObject.update();
+            // this.stage.postUpdate();
+            // this.camera3.displayObject.postUpdate();
         }
         else
         {
             this.debug.preUpdate();
         }
 
+    },
+    update: function (time) {
+
+        this.time.update(time);
+        var gl = this.renderer.gl;
+
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        
+
+        this.debug.preUpdate();
+        this.physics.preUpdate();
+        this.state.preUpdate();
+        this.plugins.preUpdate();
+        
+        this.camera = this.camera2;
+        this.world.camera = this.camera2;
+        this.camera.displayObject.preUpdate();
+
+        this.camera = this.camera3;
+        this.world.camera = this.camera3;
+        this.camera.displayObject.preUpdate();
+
+
+        this.camera = this.camera2;
+        this.world.camera = this.camera2;
+        this.camera.displayObject.update();
+
+        this.camera = this.camera3;
+        this.world.camera = this.camera3;
+        this.camera.displayObject.update();
+
+
+        this.tweens.update();
+        this.sound.update();
+        this.input.update();
+        this.state.update();
+        this.physics.update();
+        this.particles.update();
+        this.plugins.update();
+
+
+        this.camera = this.camera2;
+        this.world.camera = this.camera2;
+        this.camera.displayObject.postUpdate();
+        this.camera = this.camera3;
+        this.world.camera = this.camera3;
+        this.camera.displayObject.postUpdate();
+
+        this.plugins.postUpdate();
+
+        this.update_base(time);
+        
         if (this.renderType != Phaser.HEADLESS)
         {
-            this.renderer.render(this.stage);
-            this.plugins.render();
-            this.state.render();
-            this.plugins.postRender();
-        }
 
+            this.camera = this.camera2;
+            this.world.camera = this.camera2;
+            gl.viewport(this.width/2.0, 0, this.width/2.0, this.height);
+            this.renderer.render(this.camera.displayObject);
+
+
+            this.camera = this.camera3;
+            this.world.camera = this.camera3;
+            gl.viewport(0, 0, this.width/2.0, this.height);
+            this.renderer.render(this.camera.displayObject);
+            
+            //this.plugins.render();
+            //this.state.render();
+            //this.plugins.postRender();
+        }
     },
 
     /**

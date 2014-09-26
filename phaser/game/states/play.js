@@ -21,10 +21,6 @@
 
       this.sprite.allowGravity = true;
 
-      //this.sprite.body.velocity.x = this.game.rnd.integerInRange(-500,500);
-      //this.sprite.body.velocity.y = this.game.rnd.integerInRange(-500,500);
-      // this.sprite.events.onInputDown.add(this.clickListener, this);
-
       // Add some blocks to the world
       this.block_group = this.game.add.group();
       this.block_group.enableBody = true;
@@ -42,15 +38,12 @@
         sp.loadTexture('allblocks', 2);
         sp.body.immovable = true;
       }
-
-
       // Keyb control
       this.cursors = this.game.input.keyboard.createCursorKeys();
 
       // game.physics.enable( this.block_group , Phaser.Physics.ARCADE);
     },
     update: function() {
-
       var max_x_vel = 300;
 
       this.game.physics.arcade.collide(this.block_group, this.sprite);

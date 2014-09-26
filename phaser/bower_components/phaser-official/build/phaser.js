@@ -7,7 +7,7 @@
 *
 * Phaser - http://www.phaser.io
 *
-* v2.0.2 "Ghealdan" - Built: Fri Mar 28 2014 01:30:50
+* v2.0.2 "Ghealdan" - Built: Fri Sep 26 2014 22:18:10
 *
 * By Richard Davey http://www.photonstorm.com @photonstorm
 *
@@ -4853,7 +4853,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // update the scene graph
     stage.updateTransform();
 
-
     // interaction
     if(stage._interactive)
     {
@@ -4869,7 +4868,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
     // -- Does this need to be set every frame? -- //
     //gl.colorMask(true, true, true, this.transparent);
-    gl.viewport(0, 0, this.width, this.height);
+    gl.viewport(0, 0, this.width/2.0, this.height);
 
     // make sure we are bound to the main frame buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -4884,9 +4883,13 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     }
 
 
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    // gl.clear(gl.COLOR_BUFFER_BIT);
 
     this.renderDisplayObject( stage, this.projection );
+
+    gl.viewport(this.width/2.0, 0, this.width, this.height);
+    this.renderDisplayObject( stage, this.projection );
+
 
     // interaction
     if(stage.interactive)
@@ -9611,7 +9614,7 @@ PIXI.RenderTexture.tempMatrix = new PIXI.Matrix();
 *
 * Phaser - http://www.phaser.io
 *
-* v2.0.2 "Ghealdan" - Built: Fri Mar 28 2014 01:30:50
+* v2.0.2 "Ghealdan" - Built: Fri Sep 26 2014 22:18:10
 *
 * By Richard Davey http://www.photonstorm.com @photonstorm
 *

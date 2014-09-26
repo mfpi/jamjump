@@ -183,7 +183,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // update the scene graph
     stage.updateTransform();
 
-
     // interaction
     if(stage._interactive)
     {
@@ -199,7 +198,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
     // -- Does this need to be set every frame? -- //
     //gl.colorMask(true, true, true, this.transparent);
-    gl.viewport(0, 0, this.width, this.height);
 
     // make sure we are bound to the main frame buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -212,9 +210,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     {
         gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], 1);
     }
-
-
-    gl.clear(gl.COLOR_BUFFER_BIT);
 
     this.renderDisplayObject( stage, this.projection );
 
@@ -371,7 +366,7 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
     this.view.width = width;
     this.view.height = height;
 
-    this.gl.viewport(0, 0, this.width, this.height);
+    //this.gl.viewport(0, 0, this.width, this.height);
 
     this.projection.x =  this.width/2;
     this.projection.y =  -this.height/2;
@@ -512,7 +507,7 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
     gl.enable(gl.BLEND);
     gl.colorMask(true, true, true, this.transparent);
 
-    this.gl.viewport(0, 0, this.width, this.height);
+    //this.gl.viewport(0, 0, this.width, this.height);
 
     for(var key in PIXI.TextureCache)
     {

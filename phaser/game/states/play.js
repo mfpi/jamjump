@@ -72,7 +72,7 @@
         this.addBlock(this.sprite);
       }
 
-      this.sprite.body.velocity.x *= 0.98;
+      this.sprite.body.velocity.x *= 0.93;
 
       if ( this.sprite.body.velocity.x < - max_x_vel) {
         this.sprite.body.velocity.x = - max_x_vel;
@@ -87,14 +87,22 @@
     },
 
     addBlock: function(sprite) {
-        var sp, x, y;
+        var sp, x, y,
+          gridsize=25, comparetime;
 
-        x = sprite.body.x;
-        y = sprite.body.y;
+        comparetime = sprite.lastBlockSet || 0;
 
-        sp = this.block_group.create(x, y);
-        sp.loadTexture('allblocks', 2);
-        sp.body.immovable = true;
+        if(this.game.time.now - comparetime > 1000) {
+
+          x = Math.floor(sprite.body.x / gridsize) * gridsize;
+          y = Math.floor(sprite.body.y / gridsize + 1) * gridsize;
+
+          sp = this.block_group.create(x, y);
+          sp.loadTexture('allblocks', 2);
+          sp.body.immovable = true;
+
+          sprite.lastBlockSet = this.game.time.now;
+        }
     }
 };
 

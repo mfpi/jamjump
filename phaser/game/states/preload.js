@@ -15,7 +15,7 @@ Preload.prototype = {
     this.load.image('yeoman', 'assets/yeoman-logo.png');
 
 
-    this.load.spritesheet('allblocks', 'assets/spritesheet.png',
+    this.load.spritesheet('allblocks', 'assets/spritesheet_alpha.png',
         25,  // width
         25,  // height
         -1, // max sprites

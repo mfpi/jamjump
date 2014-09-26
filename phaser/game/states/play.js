@@ -3,10 +3,11 @@
   function Play() {}
   Play.prototype = {
     create: function() {
+      var i, sp;
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
       this.sprite = this.game.add.sprite(this.game.width/2, this.game.height/2, 'yeoman');
       this.sprite.inputEnabled = true;
-      
+
       this.game.physics.arcade.enable(this.sprite);
       this.sprite.body.collideWorldBounds = true;
       this.sprite.body.bounce.setTo(1,1);
@@ -14,6 +15,16 @@
       this.sprite.body.velocity.y = this.game.rnd.integerInRange(-500,500);
 
       this.sprite.events.onInputDown.add(this.clickListener, this);
+
+      this.block_group = this.game.add.group();
+
+      // Add some blocks to the world
+      for (i=0; i<30; i++) {
+        sp = this.block_group.create(i*25, this.game.height-150);
+        sp.loadTexture('allblocks', 2);
+      }
+
+
     },
     update: function() {
 
@@ -22,5 +33,5 @@
       this.game.state.start('gameover');
     }
   };
-  
+
   module.exports = Play;

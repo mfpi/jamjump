@@ -17,7 +17,7 @@
       this.game.physics.arcade.enable(this.sprite);
       this.sprite.body.collideWorldBounds = true;
       //this.sprite.body.bounce.setTo(1,1);
-      this.sprite.body.gravity.y = 250;
+      this.sprite.body.gravity.y = 350;
 
       this.sprite.allowGravity = true;
 
@@ -51,13 +51,15 @@
     },
     update: function() {
 
+      var max_x_vel = 300;
+
       this.game.physics.arcade.collide(this.block_group, this.sprite);
 
       if (this.cursors.left.isDown) {
-        this.sprite.body.velocity.x-=5;
+          this.sprite.body.velocity.x -= 30;
       }
       if (this.cursors.right.isDown) {
-        this.sprite.body.velocity.x+=5;
+          this.sprite.body.velocity.x+= 30;
       }
       if (this.cursors.up.isDown) {
 
@@ -67,12 +69,33 @@
         }
       }
       if (this.cursors.down.isDown) {
+        this.addBlock(this.sprite);
+      }
+
+      this.sprite.body.velocity.x *= 0.98;
+
+      if ( this.sprite.body.velocity.x < - max_x_vel) {
+        this.sprite.body.velocity.x = - max_x_vel;
+      }
+      if ( this.sprite.body.velocity.x > max_x_vel) {
+        this.sprite.body.velocity.x = max_x_vel;
       }
 
     },
     clickListener: function() {
       this.game.state.start('gameover');
+    },
+
+    addBlock: function(sprite) {
+        var sp, x, y;
+
+        x = sprite.body.x;
+        y = sprite.body.y;
+
+        sp = this.block_group.create(x, y);
+        sp.loadTexture('allblocks', 2);
+        sp.body.immovable = true;
     }
-  };
+};
 
   module.exports = Play;

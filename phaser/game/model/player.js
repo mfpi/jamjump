@@ -21,7 +21,6 @@ JumpPlayer.prototype = {
     this.sprite.body.gravity.y = 350;
     this.sprite.allowGravity = true;
     this.sprite.loadTexture('allblocks', 22);
-
   },
 
   update: function() {

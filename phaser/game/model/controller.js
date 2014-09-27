@@ -29,7 +29,9 @@ JumpController.prototype = {
           y+=1.0;
         }
     } else if (this.type == 'gamepad') {
-        return this.handler.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X);
+        var x = this.handler.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X);
+        var y = this.handler.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y);
+        return {x:x, y:y};
     }
 
     return {x:x, y:y};
@@ -39,7 +41,7 @@ JumpController.prototype = {
     if (this.type == 'keyb') {
         return this.handler.down.isDown;
     } else if (this.type == 'gamepad') {
-        return this.isDown(Phaser.Gamepad.XBOX360_A);
+        return this.handler.isDown(Phaser.Gamepad.XBOX360_A);
     }
   },
 
@@ -47,7 +49,7 @@ JumpController.prototype = {
     if (this.type == 'keyb') {
         return this.handler.up.isDown;
     } else if (this.type == 'gamepad') {
-        return this.isDown(Phaser.Gamepad.XBOX360_X);
+        return this.handler.isDown(Phaser.Gamepad.XBOX360_X);
     }
   },
 };

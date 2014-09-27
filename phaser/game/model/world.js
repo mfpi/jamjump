@@ -16,7 +16,17 @@ function WorldBlocks (game) {
 var gridsize=19;
 
 WorldBlocks.prototype = {
+    canAddBlock: function(x,y) {
+	    var that = this;
+	    if(that.blocks[hash(x, y)])
+		{
+		    return 0;
+		}
+        return 1;			
+	    
+	},
     addBlock: function(x, y) {
+	    
         this.pendingAdds.push({x:x, y:y});
     },
     toWorldCoords: function(x, y) {
@@ -30,7 +40,7 @@ WorldBlocks.prototype = {
     removeClosestTo: function (x, y) {
         var blockCoords = this.fromWorldCoords(x, y);
         var that = this;
-        var nearCoords = []
+        var nearCoords = [];
         var keys = Object.keys(this.blocks);
         keys.forEach(function (v, k) {
             nearCoords.push(that.blocks[v]);
@@ -59,11 +69,12 @@ WorldBlocks.prototype = {
         var that = this;
         this.pendingAdds.forEach(function (v, i) {
             var coords = that.toWorldCoords(v.x, v.y);
+			
             sp = that.block_group.create(coords.x, coords.y);
             sp.loadTexture('allblocks', 2);
             sp.body.immovable = true;
             sp.body.setSize(20, 20, 2, 2);
-
+			
 
             // HACK !
             // TODO : introduce a block type or so ...

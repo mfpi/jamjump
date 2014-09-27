@@ -1,7 +1,7 @@
   'use strict';
-  var JumpPlayer = require('../model/player')
-  var JumpController = require('../model/controller')
-  var WorldBlocks = require('../model/world')
+  var JumpPlayer = require('../model/player');
+  var JumpController = require('../model/controller');
+  var WorldBlocks = require('../model/world');
   function Play() {}
   Play.prototype = {
     create: function() {
@@ -28,7 +28,9 @@
         throw "Error : please make sure a game setup is initialised";
       }
 
+      //
       // Set up available controllers
+      //
       cursors = this.game.input.keyboard.createCursorKeys();
       gamepad = this.game.input.gamepad;
       gamepad.start();
@@ -45,11 +47,13 @@
           'gamepad':gamepad.pad1,
       };
 
+
+      //
+      // Set up the players according to gameSetup
+      //
       this.game.players = [];
-
-     this.game.gameSetup.players.forEach(function(o){
-        console.log(o);
-
+      this.game.gameSetup.players.forEach(function(o){
+        // console.log(o);
         temp_sprite = that.game.add.sprite(
           Math.random() * that.game.width,
           Math.random() * that.game.height);
@@ -68,20 +72,16 @@
       });
 
 
+      //
+      // Set up the world / blocks
+      //
       this.wb = new WorldBlocks(this.game);
-
-      // Add some blocks to the world
-
       for (i=0; i<30; i++) {
         this.wb.addBlock(i, 18);
       }
      for (i=10; i<20; i++) {
         this.wb.addBlock(i, 8);
       }
-
-
-      // var w = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
-
     },
     update: function() {
       this.wb.update();
@@ -89,8 +89,9 @@
       this.game.physics.arcade.collide(this.wb.block_group, this.game.players[0].sprite);
       this.game.physics.arcade.collide(this.wb.block_group, this.game.players[1].sprite);
 
-      this.game.players[0].update();
-      this.game.players[1].update();
+      this.game.players.forEach(function(o) { o.update(); });
+
+      this.game.gui.update();
     },
 
     addBlock: function(player) {

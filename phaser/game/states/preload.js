@@ -1,6 +1,7 @@
 
 'use strict';
 var GameSetup = require('../model/setup');
+var GUI = require('../model/gui');
 function Preload() {
   this.asset = null;
   this.ready = false;
@@ -26,9 +27,15 @@ Preload.prototype = {
     // Create a game setup object
     this.game.gameSetup = new GameSetup();
 
+    // text
+    this.game.gui = new GUI(
+      this.game,
+      this.game.load.bitmapFont('nokia',
+            'assets/fonts/nokia.png',
+            'assets/fonts/nokia.xml')
+    );
   },
   create: function() {
-
     this.asset.cropEnabled = false;
   },
   update: function() {

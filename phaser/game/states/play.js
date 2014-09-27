@@ -72,50 +72,8 @@
     },
     update: function() {
       this.wb.update();
-
-      this.myGameModelObject.update();
-
-      var max_x_vel = 300;
-
       this.game.physics.arcade.collide(this.wb.block_group, this.sprite);
-
-      if (this.cursors.left.isDown) {
-          this.moveVector.x -= 30;
-      }
-
-      this.moveVector.x += 30*this.gamepad.pad2.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X);
-
-      // console.log(this.gamepad.pad2.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X));
-
-      if (this.cursors.right.isDown) {
-          this.moveVector.x += 30;
-      }
-      if (this.cursors.up.isDown || this.gamepad.pad2.isDown(Phaser.Gamepad.XBOX360_A)) {
-
-        // funny double jump mechanic
-        if ( Math.abs(this.moveVector.y) < 1) {
-          this.moveVector.y -= 250;
-        }
-      }
-      if (this.cursors.down.isDown || this.gamepad.pad2.isDown(Phaser.Gamepad.XBOX360_X)) {
-        this.addBlock(this.sprite);
-      }
-
-      this.moveVector.x *= 0.93;
-
-      if ( this.moveVector.x < - max_x_vel) {
-        this.moveVector.x = - max_x_vel;
-      }
-
-      if ( this.moveVector.x > max_x_vel) {
-        this.moveVector.x = max_x_vel;
-      }
-      this.moveVector.x *= 0.98;
-
-      this.sprite.body.velocity = this.moveVector;
-    },
-    clickListener: function() {
-      this.game.state.start('gameover');
+      this.myGameModelObject.update();
     },
 
     addBlock: function(sprite) {

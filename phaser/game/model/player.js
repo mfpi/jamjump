@@ -24,6 +24,31 @@ JumpPlayer.prototype = {
     // console.log(this.controller.getDirection());
     // update ....
     // console.log("update");
+
+    var max_x_vel = 300;
+
+    this.moveVector = this.sprite.body.velocity;
+
+
+    // Direct mapping of controller-x to player velocity
+    this.sprite.body.velocity.x = this.controller.getDirection().x*140;
+
+    if (this.controller.getButtonB()) {
+        // funny double jump mechanic
+        if ( Math.abs(this.moveVector.y) < 1) {
+          this.moveVector.y -= 250;
+        }
+    }
+
+    if (this.controller.getButtonA()) {
+        this.game.addBlock(this.sprite);
+    }
+
+    // When doing physics / "velocity based" slide x controlls:
+    //if (this.cursors.right.isDown) {
+    //      this.moveVector.x += 30;
+    // }
+    // this.moveVector.x *= 0.98;
   },
 
 };

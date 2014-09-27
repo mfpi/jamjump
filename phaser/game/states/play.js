@@ -5,6 +5,13 @@
   Play.prototype = {
     create: function() {
       var i, sp;
+      // this.game.load.tilemap('platformer', 'assets/platformer.json', null, Phaser.Tilemap.TILED_JSON);
+      // this.game.load.image('spritesheet', 'assets/spritesheet.png');
+
+      // var map = this.game.add.tilemap('platformer');
+      // map.addTilesetImage('spritesheet', 'spritesheet');
+      // var layer = map.createLayer('World1');
+      // layer.resizeWorld();
 
       this.myGameModelObject = new JumpPlayer();
 
@@ -49,6 +56,21 @@
 
       // Keyb control
       this.cursors = this.game.input.keyboard.createCursorKeys();
+      this.gamepad = this.game.input.gamepad;
+      this.game.input.gamepad.start();
+      this.game.input.gamepad.start();
+      this.gamepad.start();
+      this.moveVector = new Phaser.Point(0, 0);
+        
+      this.game.input.gamepad.addCallbacks(this, {
+          onConnect: function onConnect(i) {
+              console.log("connect");
+          },
+          onDown: function onDown(b, i, s) {
+              console.log("down");
+          }});
+        
+      var w = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
 
       // game.physics.enable( this.block_group , Phaser.Physics.ARCADE);
     },
@@ -59,33 +81,41 @@
       var max_x_vel = 300;
 
       this.game.physics.arcade.collide(this.block_group, this.sprite);
-
+        
       if (this.cursors.left.isDown) {
-          this.sprite.body.velocity.x -= 30;
+          this.moveVector.x -= 30;
       }
+        
+      this.moveVector.x += 30*this.gamepad.pad2.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X);
+        
+      console.log(this.gamepad.pad2.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X));
+
       if (this.cursors.right.isDown) {
-          this.sprite.body.velocity.x+= 30;
+          this.moveVector.x += 30;
       }
-      if (this.cursors.up.isDown) {
+      if (this.cursors.up.isDown || this.gamepad.pad2.isDown(Phaser.Gamepad.XBOX360_A)) {
 
         // funny double jump mechanic
-        if ( Math.abs(this.sprite.body.velocity.y) < 1) {
-          this.sprite.body.velocity.y -= 250;
+        if ( Math.abs(this.moveVector.y) < 1) {
+          this.moveVector.y -= 250;
         }
       }
-      if (this.cursors.down.isDown) {
+      if (this.cursors.down.isDown || this.gamepad.pad2.isDown(Phaser.Gamepad.XBOX360_X)) {
         this.addBlock(this.sprite);
       }
 
-      this.sprite.body.velocity.x *= 0.93;
+      this.moveVector.x *= 0.93;
 
-      if ( this.sprite.body.velocity.x < - max_x_vel) {
-        this.sprite.body.velocity.x = - max_x_vel;
-      }
-      if ( this.sprite.body.velocity.x > max_x_vel) {
-        this.sprite.body.velocity.x = max_x_vel;
+      if ( this.moveVector.x < - max_x_vel) {
+        this.moveVector.x = - max_x_vel;
       }
 
+      if ( this.moveVector.x > max_x_vel) {
+        this.moveVector.x = max_x_vel;
+      }
+      this.moveVector.x *= 0.98;
+         
+      this.sprite.body.velocity = this.moveVector;
     },
     clickListener: function() {
       this.game.state.start('gameover');
@@ -112,3 +142,5 @@
 };
 
   module.exports = Play;
+
+

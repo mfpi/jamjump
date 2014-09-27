@@ -66,6 +66,14 @@ JumpPlayer.prototype = {
     this.chooseSkin(1);
   },
 
+  registerBlockTouch: function(block) {
+    // called from phyics collision testing ...
+    // console.log("touched");
+    // console.log(block);
+
+
+  },
+
   update: function() {
     var v = this.sprite.body.velocity,
         time_passed;

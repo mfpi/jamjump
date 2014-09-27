@@ -38,9 +38,10 @@
           onConnect: function onConnect(i) {
               console.log("connect");
           },
-          onDown: function onDown(b, i, s) {
-              console.log("down");
-          }});
+          //onDown: function onDown(b, i, s) {
+          //    console.log("down");
+          //}
+        });
 
       controller_map = {
           'keyb': cursors,
@@ -84,18 +85,31 @@
       }
     },
     update: function() {
+      var that = this;
+
+      // Update world-blocks
       this.wb.update();
 
-      this.game.physics.arcade.collide(this.wb.block_group, this.game.players[0].sprite);
-      this.game.physics.arcade.collide(this.wb.block_group, this.game.players[1].sprite);
+      // Update all players
+      this.game.players.forEach(function(p) {
 
-      this.game.players.forEach(function(o) { o.update(); });
+        // Physics - check collide
+        that.game.physics.arcade.collide(
+          that.wb.block_group,
+          p.sprite,
+          function (sprite, group) {
+            p.registerBlockTouch(group);
+          });
+
+        // Player updates
+        p.update();
+      });
 
       // this.gui.update();
     },
 
     addBlock: function(player) {
-        console.log("addblock");
+
         var sp, x, y,
           gridsize=19;
         var sprite = this.game.players[0].sprite;

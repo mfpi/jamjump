@@ -1,6 +1,7 @@
   'use strict';
   var JumpPlayer = require('../model/player')
   var JumpController = require('../model/controller')
+  var WorldBlocks = require('../model/world')
   function Play() {}
   Play.prototype = {
     create: function() {
@@ -32,20 +33,15 @@
           );
       this.myGameModelObject.init();
 
+      this.wb = new WorldBlocks(this.game);
+
       // Add some blocks to the world
-      this.block_group = this.game.add.group();
-      this.block_group.enableBody = true;
-      this.block_group.allowGravity = false;
-      this.block_group.immovable = true;
+
       for (i=0; i<30; i++) {
-        sp = this.block_group.create(i*25, this.game.height-150);
-        sp.loadTexture('allblocks', 2);
-        sp.body.immovable = true;
+        this.wb.addBlock(i, 18);
       }
      for (i=10; i<20; i++) {
-        sp = this.block_group.create(i*25, this.game.height-350);
-        sp.loadTexture('allblocks', 2);
-        sp.body.immovable = true;
+        this.wb.addBlock(i, 8);
       }
 
       // Set up controls control
@@ -75,12 +71,13 @@
       // game.physics.enable( this.block_group , Phaser.Physics.ARCADE);
     },
     update: function() {
+      this.wb.update();
 
       this.myGameModelObject.update();
 
       var max_x_vel = 300;
 
-      this.game.physics.arcade.collide(this.block_group, this.sprite);
+      this.game.physics.arcade.collide(this.wb.block_group, this.sprite);
 
       if (this.cursors.left.isDown) {
           this.moveVector.x -= 30;
@@ -123,21 +120,22 @@
 
     addBlock: function(sprite) {
         var sp, x, y,
-          gridsize=25, comparetime;
+          gridsize=19, comparetime;
 
         comparetime = sprite.lastBlockSet || 0;
 
         if(this.game.time.now - comparetime > 1000) {
 
-          x = Math.floor(sprite.body.x / gridsize) * gridsize;
-          y = Math.floor(sprite.body.y / gridsize + 1) * gridsize;
+          x = Math.floor(sprite.body.x / gridsize);
+          y = Math.floor(sprite.body.y / gridsize + 1);
 
-          sp = this.block_group.create(x, y);
-          sp.loadTexture('allblocks', 2);
-          sp.body.immovable = true;
+          this.wb.addBlock(x, y);
 
           sprite.lastBlockSet = this.game.time.now;
         }
+    },
+    render: function() {
+        //this.game.debug.quadTree(game.physics.arcade.quadTree);
     }
 };
 

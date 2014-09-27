@@ -24,6 +24,9 @@ Preload.prototype = {
         4  // spacing
         );
 
+
+    this.load.text('testlevel', 'assets/levels/level1.txt');
+    this.game.testMyLevel = this.load.getAsset('text', 'testlevel');
     this.load.spritesheet('runner', 'assets/runner_sheet.png', 24,24, -1, 0, 0);
 
     this.load.image('redboxblock', 'assets/Block1.png');
@@ -37,8 +40,6 @@ Preload.prototype = {
 
     // text
     this.game.gui = new GUI(this.game, font);
-
-    console.log(this.game.gui);
   },
   create: function() {
     this.asset.cropEnabled = false;

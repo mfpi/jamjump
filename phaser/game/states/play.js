@@ -91,13 +91,13 @@
 
       this.game.players.forEach(function(o) { o.update(); });
 
-      this.game.gui.update();
+      // this.gui.update();
     },
 
     addBlock: function(player) {
         console.log("addblock");
         var sp, x, y,
-          gridsize=19, comparetime;
+          gridsize=19;
         var sprite = this.game.players[0].sprite;
         var otherSprite = this.game.players[1].sprite;
         if (player == 1) {
@@ -108,10 +108,6 @@
             otherSprite = this.game.players[0].sprite;
         }
 
-        comparetime = sprite.lastBlockSet || 0;
-
-        if(this.game.time.now - comparetime > 1000) {
-
           x = Math.floor(sprite.body.x / gridsize);
           y = Math.floor(sprite.body.y / gridsize + 1);
 
@@ -119,7 +115,6 @@
           this.wb.removeClosestTo(otherSprite.body.x, otherSprite.body.y);
 
           sprite.lastBlockSet = this.game.time.now;
-        }
     },
     render: function() {
         //this.game.debug.quadTree(game.physics.arcade.quadTree);

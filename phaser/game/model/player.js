@@ -1,10 +1,22 @@
 function JumpPlayer(state, sprite, playerId, controller) {
     // Initialise with reference to game and sprite
-    this.state = state;
+    this.gamestate = state;
     this.game = state.game;
     this.sprite = sprite;
     this.controller = controller;
     this.playerId = playerId;
+
+    this.lastUpdate = this.game.time.now;
+
+    // Physic/Behavioral Constants
+    this.JUMPFORCE = 300;
+    this.BLOCKFART = 0;
+    this.BLOCKCOST = 300;
+    this.MAXBLOCKPOWER = 1000;
+
+    // Player state
+    this.blockpower = this.MAXBLOCKPOWER;
+
 }
 
 JumpPlayer.prototype = {
@@ -37,8 +49,17 @@ JumpPlayer.prototype = {
   },
 
   update: function() {
+    var v = this.sprite.body.velocity,
+        time_passed;
 
-    var v = this.sprite.body.velocity;
+    time_passed = this.game.time.now - this.lastUpdate;
+    this.lastUpdate = this.game.time.now;
+
+    // Fill up blockpower
+    this.blockpower += time_passed;
+    if (this.blockpower > this.MAXBLOCKPOWER) {
+        this.blockpower = this.MAXBLOCKPOWER;
+    }
 
     // Direct mapping of controller-x to player velocity
     this.sprite.body.velocity.x = this.controller.getDirection().x*140;
@@ -46,13 +67,22 @@ JumpPlayer.prototype = {
     if (this.controller.getButtonB()) {
         // funny double jump mechanic
         if ( Math.abs(v.y) < 1) {
-          v.y -= 300; // jump force
+          v.y -= this.JUMPFORCE; // jump force
         }
     }
 
     if (this.controller.getButtonA()) {
-        // Maybe we can should move addBlock to game ?
-        this.state.addBlock(this.playerId);
+        // Set a block !
+        console.log(this.blockpower);
+        // Is blockforce high enough =
+        if(this.blockpower > 0) {
+          this.gamestate.addBlock(this.playerId);
+          this.lastBlockSet = this.game.time.now;
+          v.y -= this.BLOCKFART;
+
+          this.blockpower -= this.BLOCKCOST;
+        }
+
     }
 
     // When doing physics / "velocity based" slide x controlls:

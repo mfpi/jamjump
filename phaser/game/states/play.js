@@ -23,6 +23,9 @@
       this.sprite = this.game.add.sprite(
         this.game.width/2,
         this.game.height/2);
+      this.sprite2 = this.game.add.sprite(
+        this.game.width/2-100,
+        this.game.height/2);
 
       // Player object will further be handled by JumpPlayer class
       this.myGameModelObject = new JumpPlayer(
@@ -32,6 +35,12 @@
             this.game.input.keyboard.createCursorKeys())
           );
       this.myGameModelObject.init();
+        
+      this.myGameModelObject2 = new JumpPlayer(
+          this.game,
+          this.sprite2,
+          null);
+      this.myGameModelObject2.init();
 
       this.wb = new WorldBlocks(this.game);
 
@@ -48,7 +57,6 @@
 
       this.gamepad = this.game.input.gamepad;
       this.game.input.gamepad.start();
-      this.game.input.gamepad.start();
       this.gamepad.start();
       this.moveVector = new Phaser.Point(0, 0);
 
@@ -63,8 +71,7 @@
       //
       // Uncomment to set gamepad as controller :
       //
-      //this.myGameModelObject.controller = new JumpController('gamepad',
-      //this.game.input.gamepad.pad2);*/
+      this.myGameModelObject2.controller = new JumpController('gamepad', this.game.input.gamepad.pad1);
 
       // var w = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
 
@@ -73,7 +80,9 @@
     update: function() {
       this.wb.update();
       this.game.physics.arcade.collide(this.wb.block_group, this.sprite);
+      this.game.physics.arcade.collide(this.wb.block_group, this.sprite2);
       this.myGameModelObject.update();
+      this.myGameModelObject2.update();
     },
 
     addBlock: function(sprite) {

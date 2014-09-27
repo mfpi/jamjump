@@ -39,13 +39,13 @@
       this.block_group.immovable = true;
 
       for (i=0; i<30; i++) {
-        sp = this.block_group.create(i*25, this.game.height-150);
+        sp = this.block_group.create(i*22, this.game.height-150);
         sp.loadTexture('allblocks', 2);
         sp.body.immovable = true;
       }
 
      for (i=10; i<20; i++) {
-        sp = this.block_group.create(i*25, this.game.height-350);
+        sp = this.block_group.create(i*22, this.game.height-350);
         sp.loadTexture('allblocks', 2);
         sp.body.immovable = true;
       }
@@ -118,7 +118,7 @@
 
     addBlock: function(sprite) {
         var sp, x, y,
-          gridsize=25, comparetime;
+          gridsize=22, comparetime;
 
         comparetime = sprite.lastBlockSet || 0;
 

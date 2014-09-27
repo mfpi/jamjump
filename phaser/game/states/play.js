@@ -88,7 +88,7 @@
       if (this.cursors.right.isDown) {
           this.moveVector.x += 30;
       }
-      if (this.cursors.up.isDown || this.gamepad.pad2.isDown(Phaser.Gamepad.XBOX360_A) {
+      if (this.cursors.up.isDown || this.gamepad.pad2.isDown(Phaser.Gamepad.XBOX360_A)) {
 
         // funny double jump mechanic
         if ( Math.abs(this.moveVector.y) < 1) {
@@ -98,6 +98,8 @@
       if (this.cursors.down.isDown || this.gamepad.pad2.isDown(Phaser.Gamepad.XBOX360_X)) {
         this.addBlock(this.sprite);
       }
+
+      this.moveVector.x *= 0.93;
 
       if ( this.moveVector.x < - max_x_vel) {
         this.moveVector.x = - max_x_vel;
@@ -115,15 +117,23 @@
     },
 
     addBlock: function(sprite) {
-        var sp, x, y;
+        var sp, x, y,
+          gridsize=25, comparetime;
 
-        x = sprite.body.x;
-        y = sprite.body.y;
+        comparetime = sprite.lastBlockSet || 0;
 
-        sp = this.block_group.create(x, y);
-        sp.loadTexture('allblocks', 2);
-        sp.body.immovable = true;
-    },
+        if(this.game.time.now - comparetime > 1000) {
+
+          x = Math.floor(sprite.body.x / gridsize) * gridsize;
+          y = Math.floor(sprite.body.y / gridsize + 1) * gridsize;
+
+          sp = this.block_group.create(x, y);
+          sp.loadTexture('allblocks', 2);
+          sp.body.immovable = true;
+
+          sprite.lastBlockSet = this.game.time.now;
+        }
+    }
 };
 
   module.exports = Play;

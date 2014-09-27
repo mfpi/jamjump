@@ -88,7 +88,7 @@
       if (this.cursors.right.isDown) {
           this.moveVector.x += 30;
       }
-      if (this.cursors.up.isDown || this.gamepad.pad2.isDown(Phaser.Gamepad.XBOX360_A)) {
+      if (this.cursors.up.isDown || this.gamepad.pad2.isDown(Phaser.Gamepad.XBOX360_A) {
 
         // funny double jump mechanic
         if ( Math.abs(this.moveVector.y) < 1) {

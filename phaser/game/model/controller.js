@@ -1,7 +1,7 @@
 function JumpController(controllerType, controllerHandler) {
     if (controllerType == 'keyb') {
       return new JumpKeyboardController(controllerHandler);
-    } else {
+    } else if (controllerType == 'gamepad') {
       return new JumpGamepadController(controllerHandler);
     } else {
       throw "Unknown controller-type ! Use 'keyb' or 'gamepad'";

@@ -125,12 +125,14 @@
     },
 
     addBlock: function(player) {
-
+        
         var sp, x, y,
           gridsize=19;
-        var sprite = this.game.players[0].sprite;
+        
+		var sprite = this.game.players[0].sprite;
         var otherSprite = this.game.players[1].sprite;
-        if (player == 1) {
+        
+		if (player == 1) {
             sprite = this.game.players[0].sprite;
             otherSprite = this.game.players[1].sprite;
         } else if (player == 2) {
@@ -140,11 +142,13 @@
 
           x = Math.floor(sprite.body.x / gridsize);
           y = Math.floor(sprite.body.y / gridsize + 1);
+          if(this.wb.canAddBlock(x,y))
+		  {
+            this.wb.addBlock(x, y);
+            this.wb.removeClosestTo(otherSprite.body.x, otherSprite.body.y);
+            sprite.lastBlockSet = this.game.time.now;
+		  }
 
-          this.wb.addBlock(x, y);
-          this.wb.removeClosestTo(otherSprite.body.x, otherSprite.body.y);
-
-          sprite.lastBlockSet = this.game.time.now;
     },
     render: function() {
         //this.game.debug.quadTree(game.physics.arcade.quadTree);

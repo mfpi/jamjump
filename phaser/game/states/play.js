@@ -26,7 +26,7 @@
 
       // Player object will further be handled by JumpPlayer class
       this.myGameModelObject = new JumpPlayer(
-          this.game,
+          this,
           this.sprite,
           new JumpController('keyb',
             this.game.input.keyboard.createCursorKeys())

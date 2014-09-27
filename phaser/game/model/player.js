@@ -1,6 +1,7 @@
-function JumpPlayer(game, sprite, controller) {
+function JumpPlayer(state, sprite, controller) {
     // Initialise with reference to game and sprite
-    this.game = game;
+    this.state = state;
+    this.game = state.game;
     this.sprite = sprite;
     this.controller = controller;
 }
@@ -17,7 +18,6 @@ JumpPlayer.prototype = {
     this.sprite.body.gravity.y = 350;
     this.sprite.allowGravity = true;
     this.sprite.loadTexture('allblocks', 22);
-
   },
 
   update: function() {
@@ -41,7 +41,8 @@ JumpPlayer.prototype = {
     }
 
     if (this.controller.getButtonA()) {
-        this.game.addBlock(this.sprite);
+        // Maybe we can should move addBlock to game ?
+        this.state.addBlock(this.sprite);
     }
 
     // When doing physics / "velocity based" slide x controlls:

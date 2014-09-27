@@ -57,7 +57,7 @@
         // console.log(o);
         temp_sprite = that.game.add.sprite(
           Math.random() * that.game.width,
-          Math.random() * that.game.height);
+          Math.random() * (that.game.height / 2));
 
         temp_player = new JumpPlayer(
           that,
@@ -83,6 +83,11 @@
      for (i=10; i<20; i++) {
         this.wb.addBlock(i, 8);
       }
+
+      // New jump mechanics nees a floor of blocks :
+      for (i=0; i<50; i++) {
+        this.wb.addBlock(i, 30);
+      }
     },
     update: function() {
       var that = this;
@@ -105,7 +110,7 @@
         p.update();
       });
 
-      // this.gui.update();
+      this.game.gui.update();
     },
 
     addBlock: function(player) {

@@ -63,14 +63,25 @@ WorldBlocks.prototype = {
             sp.loadTexture('allblocks', 2);
             sp.body.immovable = true;
             sp.body.setSize(20, 20, 2, 2);
-            that.blocks[hash(v.x, v.y)] = {k:v, v:sp};
+
+
+            // HACK !
+            // TODO : introduce a block type or so ...
+            //  this curde check prevnents "the ground" from beeing indexed,
+            //  thus, it is never considered for deletion
+            if (v.y < 30) {
+                that.blocks[hash(v.x, v.y)] = {k:v, v:sp};
+            }
+
             });
         this.pendingAdds = [];
-        
+
         this.pendingRemoves.forEach(function (v, i) {
-            console.log(v);
-            v.key.v.kill();
-            delete that.blocks[hash(v.key.k.x, v.key.k.y)]
+            // console.log(v);
+            if (v.key) {
+                v.key.v.kill();
+                delete that.blocks[hash(v.key.k.x, v.key.k.y)]
+            }
         });
         this.pendingRemoves = [];
     }

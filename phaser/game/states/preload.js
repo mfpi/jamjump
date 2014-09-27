@@ -24,16 +24,18 @@ Preload.prototype = {
         4  // spacing
         );
 
+
     // Create a game setup object
     this.game.gameSetup = new GameSetup();
 
-    // text
-    this.game.gui = new GUI(
-      this.game,
-      this.game.load.bitmapFont('nokia',
+    var font = this.game.load.bitmapFont('nokia',
             'assets/fonts/nokia.png',
-            'assets/fonts/nokia.xml')
-    );
+            'assets/fonts/nokia.xml');
+
+    // text
+    this.game.gui = new GUI(this.game, font);
+
+    console.log(this.game.gui);
   },
   create: function() {
     this.asset.cropEnabled = false;

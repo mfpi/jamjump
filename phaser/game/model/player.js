@@ -10,13 +10,19 @@ function JumpPlayer(state, sprite, playerId, controller) {
 
     // Physic/Behavioral Constants
     this.JUMPFORCE = 300;
-    this.BLOCKFART = 0;
+    this.BLOCKFART = 50;
     this.BLOCKCOST = 300;
     this.MAXBLOCKPOWER = 1000;
     this.NOREPEAT = 100;
+    this.DOUBLEJUMP_TRIGGER_VELOCITY = 15;  // max y-velocity to trigger double jump
+
+    this.YDIFF_TO_STAND = 10;   // what y-diff signals "stand-on-block"
+                                // HINT : depends on the sprite's bodies / anchor points
 
     // Player state
     this.blockpower = this.MAXBLOCKPOWER;
+    this.jumpStarted = false;
+    this.canDoubleJump = false;
 
     this.actionTimers = {};
 
@@ -70,8 +76,11 @@ JumpPlayer.prototype = {
     // called from phyics collision testing ...
     // console.log("touched");
     // console.log(block);
-
-
+    var dir = block.body.y - this.sprite.body.y;
+    if (dir >= this.YDIFF_TO_STAND) {
+        this.jumpStarted = false;
+        this.canDoubleJump = false;
+    };
   },
 
   update: function() {
@@ -92,9 +101,18 @@ JumpPlayer.prototype = {
 
     if (this.controller.getButtonB()) {
         // funny double jump mechanic
-        if ( Math.abs(v.y) < 1) {
+        if ( Math.abs(v.y) < 1 && !this.jumpStarted) {
           v.y -= this.JUMPFORCE; // jump force
+          this.jumpStarted = true;
+          this.canDoubleJump = true;
         }
+
+        if ( Math.abs(v.y) < this.DOUBLEJUMP_TRIGGER_VELOCITY && this.canDoubleJump) {
+            // double jump !
+            this.canDoubleJump = false;
+            v.y -= this.JUMPFORCE; // jump force
+        }
+
     }
 
     if (this.controller.getButtonA()) {

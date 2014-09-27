@@ -1,9 +1,12 @@
 
   'use strict';
+  var JumpPlayer = require('../model/player')
   function Play() {}
   Play.prototype = {
     create: function() {
       var i, sp;
+
+      this.myGameModelObject = new JumpPlayer();
 
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -50,6 +53,8 @@
       // game.physics.enable( this.block_group , Phaser.Physics.ARCADE);
     },
     update: function() {
+
+      this.myGameModelObject.update();
 
       var max_x_vel = 300;
 

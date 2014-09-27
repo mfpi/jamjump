@@ -5,7 +5,14 @@
   function Play() {}
   Play.prototype = {
     create: function() {
-      var i, sp, ctrl;
+      var i, sp, ctrl,
+        that = this,
+        cursors,
+        gamepad,
+        temp_sprite,
+        temp_player,
+        controller_map;
+
       // this.game.load.tilemap('platformer', 'assets/platformer.json', null, Phaser.Tilemap.TILED_JSON);
       // this.game.load.image('spritesheet', 'assets/spritesheet.png');
 
@@ -17,37 +24,49 @@
       // Enable physics for game
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-      this.cursors = this.game.input.keyboard.createCursorKeys();
-
       if (typeof this.game.gameSetup === 'undefined') {
         throw "Error : please make sure a game setup is initialised";
       }
 
-      // Create a player object
-      this.sprite = this.game.add.sprite(
-        this.game.width/2,
-        this.game.height/2);
-      this.sprite2 = this.game.add.sprite(
-        this.game.width/2-100,
-        this.game.height/2);
+      // Set up available controllers
+      cursors = this.game.input.keyboard.createCursorKeys();
+      gamepad = this.game.input.gamepad;
+      gamepad.start();
+      gamepad.addCallbacks(this, {
+          onConnect: function onConnect(i) {
+              console.log("connect");
+          },
+          onDown: function onDown(b, i, s) {
+              console.log("down");
+          }});
 
-      // Player object will further be handled by JumpPlayer class
-      this.myGameModelObject = new JumpPlayer(
-          this,
-          this.sprite,
-          1,
-          new JumpController('keyb',
-            this.game.input.keyboard.createCursorKeys())
+      controller_map = {
+          'keyb': cursors,
+          'gamepad':gamepad.pad1,
+      };
+
+      this.game.players = [];
+
+     this.game.gameSetup.players.forEach(function(o){
+        console.log(o);
+
+        temp_sprite = that.game.add.sprite(
+          Math.random() * that.game.width,
+          Math.random() * that.game.height);
+
+        temp_player = new JumpPlayer(
+          that,
+          temp_sprite,
+          o.id,
+          new JumpController(
+            o.controller,
+            controller_map[o.controller])
           );
-      this.myGameModelObject.init();
+          temp_player.init();
+          temp_player.chooseSkin(o.skin);
+          that.game.players.push(temp_player);
+      });
 
-      this.myGameModelObject2 = new JumpPlayer(
-          this,
-          this.sprite2,
-          2,
-          null);
-      this.myGameModelObject2.init();
-      this.myGameModelObject2.chooseSkin(2);
 
       this.wb = new WorldBlocks(this.game);
 
@@ -60,50 +79,32 @@
         this.wb.addBlock(i, 8);
       }
 
-      // Set up controls control
-
-      this.gamepad = this.game.input.gamepad;
-      this.game.input.gamepad.start();
-      this.gamepad.start();
-      this.moveVector = new Phaser.Point(0, 0);
-
-      this.game.input.gamepad.addCallbacks(this, {
-          onConnect: function onConnect(i) {
-              console.log("connect");
-          },
-          onDown: function onDown(b, i, s) {
-              console.log("down");
-          }});
-
-      //
-      // Uncomment to set gamepad as controller :
-      //
-      this.myGameModelObject2.controller = new JumpController('gamepad', this.game.input.gamepad.pad1);
 
       // var w = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
 
-      // game.physics.enable( this.block_group , Phaser.Physics.ARCADE);
     },
     update: function() {
       this.wb.update();
-      this.game.physics.arcade.collide(this.wb.block_group, this.sprite);
-      this.game.physics.arcade.collide(this.wb.block_group, this.sprite2);
-      this.myGameModelObject.update();
-      this.myGameModelObject2.update();
+
+      this.game.physics.arcade.collide(this.wb.block_group, this.game.players[0].sprite);
+      this.game.physics.arcade.collide(this.wb.block_group, this.game.players[1].sprite);
+
+      this.game.players[0].update();
+      this.game.players[1].update();
     },
 
     addBlock: function(player) {
         console.log("addblock");
         var sp, x, y,
           gridsize=19, comparetime;
-        var sprite = this.sprite;
-        var otherSprite = this.sprite2;
+        var sprite = this.game.players[0].sprite;
+        var otherSprite = this.game.players[1].sprite;
         if (player == 1) {
-            sprite = this.sprite;
-            otherSprite = this.sprite2;
+            sprite = this.game.players[0].sprite;
+            otherSprite = this.game.players[1].sprite;
         } else if (player == 2) {
-            sprite = this.sprite2;
-            otherSprite = this.sprite;
+            sprite = this.game.players[1].sprite;
+            otherSprite = this.game.players[0].sprite;
         }
 
         comparetime = sprite.lastBlockSet || 0;

@@ -1,5 +1,6 @@
 
 'use strict';
+var GameSetup = require('../model/setup');
 function Preload() {
   this.asset = null;
   this.ready = false;
@@ -12,7 +13,6 @@ Preload.prototype = {
 
     this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
     this.load.setPreloadSprite(this.asset);
-    this.load.image('yeoman', 'assets/yeoman-logo.png');
 
 
     this.load.spritesheet('allblocks', 'assets/spritesheet_alpha.png',
@@ -23,7 +23,8 @@ Preload.prototype = {
         4  // spacing
         );
 
-    this.load.image('basicblock', 'assets/yeoman-logo.png');
+    // Create a game setup object
+    this.game.gameSetup = new GameSetup();
 
   },
   create: function() {

@@ -12,6 +12,14 @@ JumpPlayer.prototype = {
     this.sprite.body.y = y;
   },
 
+  chooseSkin: function (skin_n) {
+    if (skin_n < 2) {
+        this.sprite.loadTexture('allblocks', 22);
+    } else {
+        this.sprite.loadTexture('allblocks', 42);
+    }
+  },
+
   init: function() {
     // First thing is to enable physics
     this.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
@@ -19,9 +27,12 @@ JumpPlayer.prototype = {
     // Set parameters of physics
     this.sprite.body.collideWorldBounds = true;
     this.sprite.body.setSize(19, 14, 0, 5);
-    this.sprite.body.gravity.y = 350;
+    this.sprite.body.gravity.y = 1050;
+    console.log(this.sprite.body);
     this.sprite.allowGravity = true;
-    this.sprite.loadTexture('allblocks', 22);
+
+    // Default skin-1
+    this.chooseSkin(1);
   },
 
   update: function() {
@@ -29,7 +40,6 @@ JumpPlayer.prototype = {
     // update ....
     // console.log("update");
 
-    var max_x_vel = 300;
 
     this.moveVector = this.sprite.body.velocity;
 
@@ -40,7 +50,7 @@ JumpPlayer.prototype = {
     if (this.controller.getButtonB()) {
         // funny double jump mechanic
         if ( Math.abs(this.moveVector.y) < 1) {
-          this.moveVector.y -= 250;
+          this.moveVector.y -= 300; // jump force
         }
     }
 
@@ -50,6 +60,7 @@ JumpPlayer.prototype = {
     }
 
     // When doing physics / "velocity based" slide x controlls:
+    // var max_x_vel = 300;
     //if (this.cursors.right.isDown) {
     //      this.moveVector.x += 30;
     // }

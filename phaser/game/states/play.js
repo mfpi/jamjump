@@ -19,6 +19,10 @@
 
       this.cursors = this.game.input.keyboard.createCursorKeys();
 
+      if (typeof this.game.gameSetup === 'undefined') {
+        throw "Error : please make sure a game setup is initialised";
+      }
+
       // Create a player object
       this.sprite = this.game.add.sprite(
         this.game.width/2,
@@ -41,6 +45,7 @@
           this.sprite2,
           null);
       this.myGameModelObject2.init();
+      this.myGameModelObject2.chooseSkin(2);
 
       this.wb = new WorldBlocks(this.game);
 

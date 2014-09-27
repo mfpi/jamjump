@@ -1,9 +1,10 @@
-function JumpPlayer(state, sprite, controller) {
+function JumpPlayer(state, sprite, playerId, controller) {
     // Initialise with reference to game and sprite
     this.state = state;
     this.game = state.game;
     this.sprite = sprite;
     this.controller = controller;
+    this.playerId = playerId;
 }
 
 JumpPlayer.prototype = {
@@ -46,7 +47,7 @@ JumpPlayer.prototype = {
 
     if (this.controller.getButtonA()) {
         // Maybe we can should move addBlock to game ?
-        this.state.addBlock(this.sprite);
+        this.state.addBlock(this.playerId);
     }
 
     // When doing physics / "velocity based" slide x controlls:

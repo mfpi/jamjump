@@ -31,6 +31,7 @@
       this.myGameModelObject = new JumpPlayer(
           this,
           this.sprite,
+          1,
           new JumpController('keyb',
             this.game.input.keyboard.createCursorKeys())
           );
@@ -39,6 +40,7 @@
       this.myGameModelObject2 = new JumpPlayer(
           this,
           this.sprite2,
+          2,
           null);
       this.myGameModelObject2.init();
 
@@ -85,9 +87,19 @@
       this.myGameModelObject2.update();
     },
 
-    addBlock: function(sprite) {
+    addBlock: function(player) {
+        console.log("addblock");
         var sp, x, y,
           gridsize=19, comparetime;
+        var sprite = this.sprite;
+        var otherSprite = this.sprite2;
+        if (player == 1) {
+            sprite = this.sprite;
+            otherSprite = this.sprite2;
+        } else if (player == 2) {
+            sprite = this.sprite2;
+            otherSprite = this.sprite;
+        }
 
         comparetime = sprite.lastBlockSet || 0;
 
@@ -97,6 +109,7 @@
           y = Math.floor(sprite.body.y / gridsize + 1);
 
           this.wb.addBlock(x, y);
+          this.wb.removeClosestTo(otherSprite.body.x, otherSprite.body.y);
 
           sprite.lastBlockSet = this.game.time.now;
         }

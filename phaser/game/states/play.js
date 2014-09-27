@@ -81,12 +81,30 @@
       // Set up the world / blocks
       //
       this.wb = new WorldBlocks(this.game);
-      for (i=0; i<30; i++) {
-        this.wb.addBlock(i, 18);
+      //for (i=0; i<30; i++) {
+      //  this.wb.addBlock(i, 18);
+      //}
+      //for (i=10; i<20; i++) {
+      //  this.wb.addBlock(i, 8);
+      //}
+
+      //
+      // Load the level from the textfile
+      //
+      // TODO : move this to levelLoader component
+      var theLevel = this.game.testMyLevel.file.data;
+      var x = 0, y = 0;
+      for (var ch in theLevel) {
+        if (theLevel[ch] == "\n") {
+          y++;
+          x = 0;
+        }
+        if (theLevel[ch] === "1") {
+          this.wb.addBlock(x, y);
+        }
+        x++;
       }
-     for (i=10; i<20; i++) {
-        this.wb.addBlock(i, 8);
-      }
+
 
       // New jump mechanics nees a floor of blocks :
       for (i=0; i<50; i++) {
@@ -125,13 +143,13 @@
     },
 
     addBlock: function(player) {
-        
+
         var sp, x, y,
           gridsize=19;
-        
+
 		var sprite = this.game.players[0].sprite;
         var otherSprite = this.game.players[1].sprite;
-        
+
 		if (player == 1) {
             sprite = this.game.players[0].sprite;
             otherSprite = this.game.players[1].sprite;

@@ -16,11 +16,11 @@ Preload.prototype = {
 
 
     this.load.spritesheet('allblocks', 'assets/spritesheet_alpha.png',
-        22,  // width
-        22,  // height
+        19,  // width
+        19,  // height
         -1, // max sprites
-        1,  // margin
-        1  // spacing
+        4,  // margin
+        4  // spacing
         );
 
     this.load.image('basicblock', 'assets/yeoman-logo.png');

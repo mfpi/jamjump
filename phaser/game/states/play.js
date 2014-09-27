@@ -24,8 +24,9 @@
 
       // this.sprite.inputEnabled = true;
 
-      this.game.physics.arcade.enable(this.sprite);
+      this.game.physics.enable(this.sprite, Phaser.Physics.ARCADE, true);
       this.sprite.body.collideWorldBounds = true;
+      this.sprite.body.setSize(19, 14, 0, 5);
       //this.sprite.body.bounce.setTo(1,1);
       this.sprite.body.gravity.y = 350;
 
@@ -42,13 +43,13 @@
       this.block_group.immovable = true;
 
       for (i=0; i<30; i++) {
-        sp = this.block_group.create(i*22, this.game.height-150);
+        sp = this.block_group.create(i*19, this.game.height-150);
         sp.loadTexture('allblocks', 2);
         sp.body.immovable = true;
       }
 
      for (i=10; i<20; i++) {
-        sp = this.block_group.create(i*22, this.game.height-350);
+        sp = this.block_group.create(i*19, this.game.height-350);
         sp.loadTexture('allblocks', 2);
         sp.body.immovable = true;
       }
@@ -123,7 +124,7 @@
 
     addBlock: function(sprite) {
         var sp, x, y,
-          gridsize=22, comparetime;
+          gridsize=19, comparetime;
 
         comparetime = sprite.lastBlockSet || 0;
 
@@ -135,9 +136,13 @@
           sp = this.block_group.create(x, y);
           sp.loadTexture('allblocks', 2);
           sp.body.immovable = true;
+          sp.body.setSize(20, 20, 2, 2);
 
           sprite.lastBlockSet = this.game.time.now;
         }
+    },
+    render: function() {
+        //this.game.debug.quadTree(game.physics.arcade.quadTree);
     }
 };
 

@@ -4,6 +4,7 @@
 
 /**
  * The base class for all objects that are rendered on the screen.
+ * This is an abstract class and should not be used on its own rather it should be extended.
  *
  * @class DisplayObject
  * @constructor
@@ -162,12 +163,13 @@ PIXI.DisplayObject = function()
     this._cr = 1;
 
     /**
-     * The area the filter is applied to
+     * The area the filter is applied to like the hitArea this is used as more of an optimisation
+     * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle
      *
      * @property filterArea
      * @type Rectangle
      */
-    this.filterArea = new PIXI.Rectangle(0,0,1,1);
+    this.filterArea = null;//new PIXI.Rectangle(0,0,1,1);
 
     /**
      * The original, cached bounds of the object
@@ -201,33 +203,7 @@ PIXI.DisplayObject = function()
     /*
      * MOUSE Callbacks
      */
-
-    /**
-     * A callback that is used when the users clicks on the displayObject with their mouse
-     * @method click
-     * @param interactionData {InteractionData}
-     */
-
-    /**
-     * A callback that is used when the user clicks the mouse down over the sprite
-     * @method mousedown
-     * @param interactionData {InteractionData}
-     */
-
-    /**
-     * A callback that is used when the user releases the mouse that was over the displayObject
-     * for this callback to be fired the mouse must have been pressed down over the displayObject
-     * @method mouseup
-     * @param interactionData {InteractionData}
-     */
-
-    /**
-     * A callback that is used when the user releases the mouse that was over the displayObject but is no longer over the displayObject
-     * for this callback to be fired, The touch must have started over the displayObject
-     * @method mouseupoutside
-     * @param interactionData {InteractionData}
-     */
-
+    
     /**
      * A callback that is used when the users mouse rolls over the displayObject
      * @method mouseover
@@ -240,6 +216,59 @@ PIXI.DisplayObject = function()
      * @param interactionData {InteractionData}
      */
 
+    //Left button
+    /**
+     * A callback that is used when the users clicks on the displayObject with their mouse's left button
+     * @method click
+     * @param interactionData {InteractionData}
+     */
+
+    /**
+     * A callback that is used when the user clicks the mouse's left button down over the sprite
+     * @method mousedown
+     * @param interactionData {InteractionData}
+     */
+
+    /**
+     * A callback that is used when the user releases the mouse's left button that was over the displayObject
+     * for this callback to be fired, the mouse's left button must have been pressed down over the displayObject
+     * @method mouseup
+     * @param interactionData {InteractionData}
+     */
+
+    /**
+     * A callback that is used when the user releases the mouse's left button that was over the displayObject but is no longer over the displayObject
+     * for this callback to be fired, the mouse's left button must have been pressed down over the displayObject
+     * @method mouseupoutside
+     * @param interactionData {InteractionData}
+     */
+
+    //Right button
+    /**
+     * A callback that is used when the users clicks on the displayObject with their mouse's right button
+     * @method rightclick
+     * @param interactionData {InteractionData}
+     */
+
+    /**
+     * A callback that is used when the user clicks the mouse's right button down over the sprite
+     * @method rightdown
+     * @param interactionData {InteractionData}
+     */
+
+    /**
+     * A callback that is used when the user releases the mouse's right button that was over the displayObject
+     * for this callback to be fired the mouse's right button must have been pressed down over the displayObject
+     * @method rightup
+     * @param interactionData {InteractionData}
+     */
+
+    /**
+     * A callback that is used when the user releases the mouse's right button that was over the displayObject but is no longer over the displayObject
+     * for this callback to be fired, the mouse's right button must have been pressed down over the displayObject
+     * @method rightupoutside
+     * @param interactionData {InteractionData}
+     */
 
     /*
      * TOUCH Callbacks
@@ -383,6 +412,13 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
     }
 });
 
+/**
+ * Set weather or not a the display objects is cached as a bitmap.
+ * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects
+ * To remove filters simply set this property to 'null'
+ * @property cacheAsBitmap
+ * @type Boolean
+ */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'cacheAsBitmap', {
     get: function() {
         return  this._cacheAsBitmap;
@@ -472,7 +508,6 @@ PIXI.DisplayObject.prototype.getLocalBounds = function()
     return this.getBounds(PIXI.identityMatrix);///PIXI.EmptyRectangle();
 };
 
-
 /**
  * Sets the object's stage reference, the stage this object is connected to
  *
@@ -490,7 +525,7 @@ PIXI.DisplayObject.prototype.generateTexture = function(renderer)
     var bounds = this.getLocalBounds();
 
     var renderTexture = new PIXI.RenderTexture(bounds.width | 0, bounds.height | 0, renderer);
-    renderTexture.render(this);
+    renderTexture.render(this, new PIXI.Point(-bounds.x, -bounds.y) );
 
     return renderTexture;
 };
@@ -500,8 +535,41 @@ PIXI.DisplayObject.prototype.updateCache = function()
     this._generateCachedSprite();
 };
 
+/**
+ * Calculates the global position of the display object
+ *
+ * @method toGlobal
+ * @param position {Point} The world origin to calculate from
+ * @return {Point} A point object representing the position of this object
+ */
+PIXI.DisplayObject.prototype.toGlobal = function(pos)
+{
+    this.updateTransform();
+    return this.worldTransform.apply(pos);
+};
+
+/**
+ * Calculates the local position of the display object relative to another point
+ *
+ * @method toGlobal
+ * @param position {Point} The world origin to calculate from
+ * @param [from] {DisplayObject} The DisplayObject to calculate the global position from
+ * @return {Point} A point object representing the position of this object
+ */
+PIXI.DisplayObject.prototype.toLocal = function(pos, from)
+{
+    if (from)
+    {
+        pos = from.toGlobal(pos);
+    }
+    this.updateTransform();
+    return this.worldTransform.applyInverse(pos);
+};
+
 PIXI.DisplayObject.prototype._renderCachedSprite = function(renderSession)
 {
+    this._cachedSprite.worldAlpha = this.worldAlpha;
+
     if(renderSession.gl)
     {
         PIXI.Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
@@ -534,7 +602,10 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
     this._filters = null;
 
     this._cachedSprite.filters = tempFilters;
-    this._cachedSprite.texture.render(this);
+    this._cachedSprite.texture.render(this, new PIXI.Point(-bounds.x, -bounds.y) );
+
+    this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
+    this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
 
     this._filters = tempFilters;
 

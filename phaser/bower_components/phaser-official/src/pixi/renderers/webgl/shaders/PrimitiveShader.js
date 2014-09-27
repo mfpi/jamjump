@@ -9,6 +9,8 @@
 */
 PIXI.PrimitiveShader = function(gl)
 {
+    this._UID = PIXI._UID++;
+ 
     /**
      * @property gl
      * @type WebGLContext
@@ -100,5 +102,5 @@ PIXI.PrimitiveShader.prototype.destroy = function()
     this.uniforms = null;
     this.gl = null;
 
-    this.attribute = null;
+    this.attributes = null;
 };

@@ -336,6 +336,22 @@ Phaser.Math = {
     * @return {number}
     */
     angleBetween: function (x1, y1, x2, y2) {
+        return Math.atan2(y2 - y1, x2 - x1);
+    },
+
+    /**
+    * Find the angle of a segment from (x1, y1) -> (x2, y2).
+    * Note that the difference between this method and Math.angleBetween is that this assumes the y coordinate travels
+    * down the screen.
+    * 
+    * @method Phaser.Math#angleBetweenY
+    * @param {number} x1
+    * @param {number} y1
+    * @param {number} x2
+    * @param {number} y2
+    * @return {number}
+    */
+    angleBetweenY: function (x1, y1, x2, y2) {
         return Math.atan2(x2 - x1, y2 - y1);
     },
 
@@ -347,6 +363,17 @@ Phaser.Math = {
     * @return {number}
     */
     angleBetweenPoints: function (point1, point2) {
+        return Math.atan2(point2.y - point1.y, point2.x - point1.x);
+    },
+
+    /**
+    * Find the angle of a segment from (point1.x, point1.y) -> (point2.x, point2.y).
+    * @method Phaser.Math#angleBetweenPointsY
+    * @param {Phaser.Point} point1
+    * @param {Phaser.Point} point2
+    * @return {number}
+    */
+    angleBetweenPointsY: function (point1, point2) {
         return Math.atan2(point2.x - point1.x, point2.y - point1.y);
     },
 
@@ -408,7 +435,6 @@ Phaser.Math = {
     * @param {number} a2
     * @param {boolean} radians - True if angle sizes are expressed in radians.
     * @return {number}
-    */
     nearestAngleBetween: function (a1, a2, radians) {
 
         if (typeof radians === "undefined") { radians = true; }
@@ -430,6 +456,7 @@ Phaser.Math = {
         return a2 - a1;
 
     },
+    */
 
     /**
     * Interpolate across the shortest arc between two angles.
@@ -440,7 +467,6 @@ Phaser.Math = {
     * @param {boolean} radians - True if angle sizes are expressed in radians.
     * @param {Description} ease - Description.
     * @return {number}
-    */
     interpolateAngles: function (a1, a2, weight, radians, ease) {
 
         if (typeof radians === "undefined") { radians = true; }
@@ -452,6 +478,7 @@ Phaser.Math = {
         return (typeof ease === 'function') ? ease(weight, a1, a2 - a1, 1) : this.interpolateFloat(a1, a2, weight);
 
     },
+    */
 
     /**
     * Generate a random bool result based on the chance value.
@@ -490,7 +517,8 @@ Phaser.Math = {
     },
 
     /**
-    * Returns an Array containing the numbers from min to max (inclusive).
+    * Returns an Array containing the numbers from min to max and inclusive of both values.
+    * If you need exclusive of max then see Phaser.Math.numberArrayEx.
     *
     * @method Phaser.Math#numberArray
     * @param {number} min - The minimum value the array starts with.
@@ -504,6 +532,77 @@ Phaser.Math = {
         for (var i = min; i <= max; i++)
         {
             result.push(i);
+        }
+
+        return result;
+
+    },
+
+    /**
+     * Creates an array of numbers (positive and/or negative) progressing from
+     * `start` up to but not including `end`. If `start` is less than `stop` a
+     * zero-length range is created unless a negative `step` is specified.
+     *
+     * @static
+     * @method Phaser.Math#numberArrayStep
+     * @param {number} [start=0] - The start of the range.
+     * @param {number} end - The end of the range.
+     * @param {number} [step=1] - The value to increment or decrement by.
+     * @returns {Array} Returns the new array of numbers.
+     * @example
+     *
+     * Phaser.Math.numberArrayStep(4);
+     * // => [0, 1, 2, 3]
+     *
+     * Phaser.Math.numberArrayStep(1, 5);
+     * // => [1, 2, 3, 4]
+     *
+     * Phaser.Math.numberArrayStep(0, 20, 5);
+     * // => [0, 5, 10, 15]
+     *
+     * Phaser.Math.numberArrayStep(0, -4, -1);
+     * // => [0, -1, -2, -3]
+     *
+     * Phaser.Math.numberArrayStep(1, 4, 0);
+     * // => [1, 1, 1]
+     *
+     * Phaser.Math.numberArrayStep(0);
+     * // => []
+     */
+    numberArrayStep: function(start, end, step) {
+
+        start = +start || 0;
+
+        // enables use as a callback for functions like `_.map`
+        var type = typeof end;
+
+        if ((type === 'number' || type === 'string') && step && step[end] === start)
+        {
+            end = step = null;
+        }
+
+        step = step == null ? 1 : (+step || 0);
+
+        if (end === null)
+        {
+            end = start;
+            start = 0;
+        }
+        else
+        {
+            end = +end || 0;
+        }
+
+        // use `Array(length)` so engines like Chakra and V8 avoid slower modes
+        // http://youtu.be/XAqIpGU8ZZk#t=17m25s
+        var index = -1;
+        var length = Phaser.Math.max(Phaser.Math.ceil((end - start) / (step || 1)), 0);
+        var result = new Array(length);
+
+        while (++index < length)
+        {
+            result[index] = start;
+            start += step;
         }
 
         return result;
@@ -607,13 +706,30 @@ Phaser.Math = {
     },
 
     /**
+    * Ensures the given value is between min and max inclusive.
+    *
+    * @method Phaser.Math#limitValue
+    * @param {number} value - The value to limit.
+    * @param {number} min - The minimum the value can be.
+    * @param {number} max - The maximum the value can be.
+    * @return {number} The limited value.
+    */
+    limitValue: function(value, min, max) {
+
+        return value < min ? min : value > max ? max : value;
+
+    },
+
+    /**
     * Randomly returns either a 1 or -1.
     *
     * @method Phaser.Math#randomSign
     * @return {number}  1 or -1
     */
     randomSign: function () {
+
         return (Math.random() > 0.5) ? 1 : -1;
+
     },
 
     /**
@@ -769,15 +885,15 @@ Phaser.Math = {
     },
 
     /**
-    * Keeps an angle value between -180 and +180<br>
-    * Should be called whenever the angle is updated on the Sprite to stop it from going insane.
+    * Keeps an angle value between -180 and +180.
     *
     * @method Phaser.Math#wrapAngle
     * @param {number} angle - The angle value to check
-    * @param {boolean} radians - True if angle sizes are expressed in radians.
+    * @param {boolean} radians - True if angle is given in radians.
     * @return {number} The new angle value, returns the same as the input angle if it was within bounds.
     */
     wrapAngle: function (angle, radians) {
+
         var radianFactor = (radians) ? Math.PI / 180 : 1;
         return this.wrap(angle, -180 * radianFactor, 180 * radianFactor);
 
@@ -812,7 +928,7 @@ Phaser.Math = {
     /**
     * A Linear Interpolation Method, mostly used by Phaser.Tween.
     * @method Phaser.Math#linearInterpolation
-    * @param {number} v
+    * @param {Array} v
     * @param {number} k
     * @return {number}
     */
@@ -839,7 +955,7 @@ Phaser.Math = {
     /**
     * A Bezier Interpolation Method, mostly used by Phaser.Tween.
     * @method Phaser.Math#bezierInterpolation
-    * @param {number} v
+    * @param {Array} v
     * @param {number} k
     * @return {number}
     */
@@ -860,7 +976,7 @@ Phaser.Math = {
     /**
     * A Catmull Rom Interpolation Method, mostly used by Phaser.Tween.
     * @method Phaser.Math#catmullRomInterpolation
-    * @param {number} v
+    * @param {Array} v
     * @param {number} k
     * @return {number}
     */
@@ -917,6 +1033,28 @@ Phaser.Math = {
     */
     bernstein: function (n, i) {
         return this.factorial(n) / this.factorial(i) / this.factorial(n - i);
+    },
+
+    /**
+    * @method Phaser.Math#factorial
+    * @param {number} value - the number you want to evaluate
+    * @return {number}
+    */
+    factorial : function( value ){
+
+        if(value === 0)
+        {
+            return 1;
+        }
+
+        var res = value;
+
+        while( --value )
+        {
+            res *= value;
+        }
+
+        return res;
     },
 
     /**
@@ -1248,18 +1386,7 @@ Phaser.Math = {
     */
     smoothstep: function ( x, min, max ) {
 
-        if (x <= min)
-        {
-            return 0;
-        }
-
-        if (x >= max)
-        {
-            return 1;
-        }
-
-        x = (x - min) / (max - min);
-
+        x = Math.max(0, Math.min(1, (x - min) / (max - min)));
         return x * x * (3 - 2 * x);
 
     },
@@ -1275,18 +1402,7 @@ Phaser.Math = {
     */
     smootherstep: function ( x, min, max ) {
 
-        if (x <= min)
-        {
-            return 0;
-        }
-
-        if (x >= max)
-        {
-            return 1;
-        }
-
-        x = (x - min) / (max - min);
-
+        x = Math.max(0, Math.min(1, (x - min) / (max - min)));
         return x * x * x * (x * (x * 6 - 15) + 10);
 
     },
@@ -1302,6 +1418,34 @@ Phaser.Math = {
     sign: function ( x ) {
 
         return ( x < 0 ) ? -1 : ( ( x > 0 ) ? 1 : 0 );
+
+    },
+
+    /**
+    * Work out what percentage value a is of value b using the given base.
+    *
+    * @method Phaser.Math#percent
+    * @param {number} a - The value to work out the percentage for.
+    * @param {number} b - The value you wish to get the percentage of.
+    * @param {number} [base=0] - The base value.
+    * @return {number} The percentage a is of b, between 0 and 1.
+    */
+    percent: function (a, b, base) {
+
+        if (typeof base === 'undefined') { base = 0; }
+
+        if (a > b || base > b)
+        {
+            return 1;
+        }
+        else if (a < base || base > a)
+        {
+            return 0;
+        }
+        else
+        {
+            return (a - base) / b;
+        }
 
     },
 

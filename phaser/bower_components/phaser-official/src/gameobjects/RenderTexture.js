@@ -5,15 +5,22 @@
 */
 
 /**
-* A RenderTexture is a special texture that allows any displayObject to be rendered to it.
+* A RenderTexture is a special texture that allows any displayObject to be rendered to it. It allows you to take many complex objects and
+* render them down into a single quad (on WebGL) which can then be used to texture other display objects with. A way of generating textures at run-time.
+* 
 * @class Phaser.RenderTexture
 * @constructor
 * @param {Phaser.Game} game - Current game instance.
 * @param {string} key - Internal Phaser reference key for the render texture.
 * @param {number} [width=100] - The width of the render texture.
 * @param {number} [height=100] - The height of the render texture.
+* @param {string} [key=''] - The key of the RenderTexture in the Cache, if stored there.
+* @param {number} [scaleMode=Phaser.scaleModes.DEFAULT] - One of the Phaser.scaleModes consts.
 */
-Phaser.RenderTexture = function (game, width, height, key) {
+Phaser.RenderTexture = function (game, width, height, key, scaleMode) {
+
+    if (typeof key === 'undefined') { key = ''; }
+    if (typeof scaleMode === 'undefined') { scaleMode = Phaser.scaleModes.DEFAULT; }
 
     /**
     * @property {Phaser.Game} game - A reference to the currently running game.
@@ -36,7 +43,7 @@ Phaser.RenderTexture = function (game, width, height, key) {
     */
     this._temp = new Phaser.Point();
 
-    PIXI.RenderTexture.call(this, width, height);
+    PIXI.RenderTexture.call(this, width, height, this.game.renderer, scaleMode);
 
 };
 

@@ -29,7 +29,16 @@ Phaser.InputHandler = function (sprite) {
     this.enabled = false;
 
     /**
-    * @property {number} priorityID - The PriorityID controls which Sprite receives an Input event first if they should overlap.
+    * @property {boolean} checked - A disposable flag used by the Pointer class when performing priority checks.
+    * @protected
+    */
+    this.checked = false;
+
+    /**
+    * The priorityID is used to determine which game objects should get priority when input events occur. For example if you have
+    * several Sprites that overlap, by default the one at the top of the display list is given priority for input events. You can
+    * stop this from happening by controlling the priorityID value. The higher the value, the more important they are considered to the Input events.
+    * @property {number} priorityID
     * @default
     */
     this.priorityID = 0;
@@ -163,6 +172,18 @@ Phaser.InputHandler = function (sprite) {
     this.consumePointerEvent = false;
 
     /**
+    * @property {boolean} _dragPhase - Internal cache var.
+    * @private
+    */
+    this._dragPhase = false;
+
+    /**
+    * @property {boolean} _wasEnabled - Internal cache var.
+    * @private
+    */
+    this._wasEnabled = false;
+
+    /**
     * @property {Phaser.Point} _tempPoint - Internal cache var.
     * @private
     */
@@ -204,7 +225,7 @@ Phaser.InputHandler.prototype = {
     start: function (priority, useHandCursor) {
 
         priority = priority || 0;
-        if (typeof useHandCursor == 'undefined') { useHandCursor = false; }
+        if (typeof useHandCursor === 'undefined') { useHandCursor = false; }
 
         //  Turning on
         if (this.enabled === false)
@@ -235,6 +256,7 @@ Phaser.InputHandler.prototype = {
 
             this.snapOffset = new Phaser.Point();
             this.enabled = true;
+            this._wasEnabled = true;
 
             //  Create the signals the Input component will emit
             if (this.sprite.events && this.sprite.events.onInputOver === null)
@@ -248,7 +270,57 @@ Phaser.InputHandler.prototype = {
             }
         }
 
+        this.sprite.events.onAddedToGroup.add(this.addedToGroup, this);
+        this.sprite.events.onRemovedFromGroup.add(this.removedFromGroup, this);
+
+        this.flagged = false;
+
         return this.sprite;
+
+    },
+
+    /**
+    * Handles when the parent Sprite is added to a new Group.
+    *
+    * @method Phaser.InputHandler#addedToGroup
+    * @private
+    */
+    addedToGroup: function () {
+
+        if (this._dragPhase)
+        {
+            return;
+        }
+
+        if (this._wasEnabled && !this.enabled)
+        {
+            this.start();
+        }
+
+    },
+
+    /**
+    * Handles when the parent Sprite is removed from a Group.
+    *
+    * @method Phaser.InputHandler#removedFromGroup
+    * @private
+    */
+    removedFromGroup: function () {
+
+        if (this._dragPhase)
+        {
+            return;
+        }
+
+        if (this.enabled)
+        {
+            this._wasEnabled = true;
+            this.stop();
+        }
+        else
+        {
+            this._wasEnabled = false;
+        }
 
     },
 
@@ -259,6 +331,7 @@ Phaser.InputHandler.prototype = {
     reset: function () {
 
         this.enabled = false;
+        this.flagged = false;
 
         for (var i = 0; i < 10; i++)
         {
@@ -306,7 +379,7 @@ Phaser.InputHandler.prototype = {
     */
     destroy: function () {
 
-        if (this.enabled)
+        if (this.sprite)
         {
             if (this._setHandCursor)
             {
@@ -334,18 +407,22 @@ Phaser.InputHandler.prototype = {
     * @protected
     * @param {number} highestID - The highest ID currently processed by the Pointer.
     * @param {number} highestRenderID - The highest Render Order ID currently processed by the Pointer.
+    * @param {boolean} [includePixelPerfect=true] - If this object has `pixelPerfectClick` or `pixelPerfectOver` set should it be considered as valid?
     * @return {boolean} True if the object this InputHandler is bound to should be considered as valid for input detection.
     */
-    validForInput: function (highestID, highestRenderID) {
+    validForInput: function (highestID, highestRenderID, includePixelPerfect) {
 
-        if (this.sprite.scale.x === 0 || this.sprite.scale.y === 0)
+        if (typeof includePixelPerfect === 'undefined') { includePixelPerfect = true; }
+
+        if (this.sprite.scale.x === 0 || this.sprite.scale.y === 0 || this.priorityID < this.game.input.minPriorityID)
         {
             return false;
         }
 
-        if (this.pixelPerfectClick || this.pixelPerfectOver)
+        //   If we're trying to specifically IGNORE pixel perfect objects, then set includePixelPerfect to false and skip it
+        if (!includePixelPerfect && (this.pixelPerfectClick || this.pixelPerfectOver))
         {
-            return true;
+            return false;
         }
 
         if (this.priorityID > highestID || (this.priorityID === highestID && this.sprite._cache[3] < highestRenderID))
@@ -358,10 +435,23 @@ Phaser.InputHandler.prototype = {
     },
 
     /**
+    * Is this object using pixel perfect checking?
+    *
+    * @method Phaser.InputHandler#isPixelPerfect
+    * @return {boolean} True if the this InputHandler has either `pixelPerfectClick` or `pixelPerfectOver` set to `true`.
+    */
+    isPixelPerfect: function () {
+
+        return (this.pixelPerfectClick || this.pixelPerfectOver);
+
+    },
+
+    /**
     * The x coordinate of the Input pointer, relative to the top-left of the parent Sprite.
     * This value is only set when the pointer is over this Sprite.
+    * 
     * @method Phaser.InputHandler#pointerX
-    * @param {Phaser.Pointer} pointer
+    * @param {number} pointer - The index of the pointer to check. You can get this from Phaser.Pointer.id.
     * @return {number} The x coordinate of the Input pointer.
     */
     pointerX: function (pointer) {
@@ -375,8 +465,9 @@ Phaser.InputHandler.prototype = {
     /**
     * The y coordinate of the Input pointer, relative to the top-left of the parent Sprite
     * This value is only set when the pointer is over this Sprite.
+    * 
     * @method Phaser.InputHandler#pointerY
-    * @param {Phaser.Pointer} pointer
+    * @param {number} pointer - The index of the pointer to check. You can get this from Phaser.Pointer.id.
     * @return {number} The y coordinate of the Input pointer.
     */
     pointerY: function (pointer) {
@@ -388,10 +479,11 @@ Phaser.InputHandler.prototype = {
     },
 
     /**
-    * If the Pointer is touching the touchscreen, or the mouse button is held down, isDown is set to true.
+    * If the Pointer is down this returns true. Please note that it only checks if the Pointer is down, not if it's down over any specific Sprite.
+    * 
     * @method Phaser.InputHandler#pointerDown
-    * @param {Phaser.Pointer} pointer
-    * @return {boolean}
+    * @param {number} pointer - The index of the pointer to check. You can get this from Phaser.Pointer.id.
+    * @return {boolean} - True if the given pointer is down, otherwise false.
     */
     pointerDown: function (pointer) {
 
@@ -402,10 +494,11 @@ Phaser.InputHandler.prototype = {
     },
 
     /**
-    * If the Pointer is not touching the touchscreen, or the mouse button is up, isUp is set to true
+    * If the Pointer is up this returns true. Please note that it only checks if the Pointer is up, not if it's up over any specific Sprite.
+    * 
     * @method Phaser.InputHandler#pointerUp
-    * @param {Phaser.Pointer} pointer
-    * @return {boolean}
+    * @param {number} pointer - The index of the pointer to check. You can get this from Phaser.Pointer.id.
+    * @return {boolean} - True if the given pointer is up, otherwise false.
     */
     pointerUp: function (pointer) {
 
@@ -417,8 +510,9 @@ Phaser.InputHandler.prototype = {
 
     /**
     * A timestamp representing when the Pointer first touched the touchscreen.
+    * 
     * @method Phaser.InputHandler#pointerTimeDown
-    * @param {Phaser.Pointer} pointer
+    * @param {number} pointer - The index of the pointer to check. You can get this from Phaser.Pointer.id.
     * @return {number}
     */
     pointerTimeDown: function (pointer) {
@@ -445,9 +539,10 @@ Phaser.InputHandler.prototype = {
 
     /**
     * Is the Pointer over this Sprite?
+    * 
     * @method Phaser.InputHandler#pointerOver
     * @param {number} [index] - The ID number of a Pointer to check. If you don't provide a number it will check all Pointers.
-    * @return {boolean} True if the given pointer (if a index was given, or any pointer if not) is over this object.
+    * @return {boolean} - True if the given pointer (if a index was given, or any pointer if not) is over this object.
     */
     pointerOver: function (index) {
 
@@ -546,14 +641,17 @@ Phaser.InputHandler.prototype = {
     },
 
     /**
-    * Checks if the given pointer is over this Sprite and can click it.
+    * Checks if the given pointer is both down and over the Sprite this InputHandler belongs to.
+    * Use the `fastTest` flag is to quickly check just the bounding hit area even if `InputHandler.pixelPerfectOver` is `true`.
+    * 
     * @method Phaser.InputHandler#checkPointerDown
     * @param {Phaser.Pointer} pointer
+    * @param {boolean} [fastTest=false] - Force a simple hit area check even if `pixelPerfectOver` is true for this object?
     * @return {boolean} True if the pointer is down, otherwise false.
     */
-    checkPointerDown: function (pointer) {
+    checkPointerDown: function (pointer, fastTest) {
 
-        if (this.enabled === false || this.sprite.visible === false || this.sprite.parent.visible === false)
+        if (!pointer.isDown || !this.enabled || !this.sprite || !this.sprite.parent || !this.sprite.visible || !this.sprite.parent.visible)
         {
             return false;
         }
@@ -561,7 +659,9 @@ Phaser.InputHandler.prototype = {
         //  Need to pass it a temp point, in case we need it again for the pixel check
         if (this.game.input.hitTest(this.sprite, pointer, this._tempPoint))
         {
-            if (this.pixelPerfectClick)
+            if (typeof fastTest === 'undefined') { fastTest = false; }
+
+            if (!fastTest && this.pixelPerfectClick)
             {
                 return this.checkPixel(this._tempPoint.x, this._tempPoint.y);
             }
@@ -576,14 +676,17 @@ Phaser.InputHandler.prototype = {
     },
 
     /**
-    * Checks if the given pointer is over this Sprite.
+    * Checks if the given pointer is over the Sprite this InputHandler belongs to.
+    * Use the `fastTest` flag is to quickly check just the bounding hit area even if `InputHandler.pixelPerfectOver` is `true`.
+    * 
     * @method Phaser.InputHandler#checkPointerOver
     * @param {Phaser.Pointer} pointer
+    * @param {boolean} [fastTest=false] - Force a simple hit area check even if `pixelPerfectOver` is true for this object?
     * @return {boolean}
     */
-    checkPointerOver: function (pointer) {
+    checkPointerOver: function (pointer, fastTest) {
 
-        if (this.enabled === false || this.sprite.visible === false || this.sprite.parent.visible === false)
+        if (!this.enabled || !this.sprite || !this.sprite.parent || !this.sprite.visible || !this.sprite.parent.visible)
         {
             return false;
         }
@@ -591,7 +694,9 @@ Phaser.InputHandler.prototype = {
         //  Need to pass it a temp point, in case we need it again for the pixel check
         if (this.game.input.hitTest(this.sprite, pointer, this._tempPoint))
         {
-            if (this.pixelPerfectOver)
+            if (typeof fastTest === 'undefined') { fastTest = false; }
+
+            if (!fastTest && this.pixelPerfectOver)
             {
                 return this.checkPixel(this._tempPoint.x, this._tempPoint.y);
             }
@@ -619,8 +724,6 @@ Phaser.InputHandler.prototype = {
         //  Grab a pixel from our image into the hitCanvas and then test it
         if (this.sprite.texture.baseTexture.source)
         {
-            this.game.input.hitContext.clearRect(0, 0, 1, 1);
-
             if (x === null && y === null)
             {
                 //  Use the pointer parameter
@@ -643,6 +746,24 @@ Phaser.InputHandler.prototype = {
             x += this.sprite.texture.frame.x;
             y += this.sprite.texture.frame.y;
 
+            if (this.sprite.texture.trim)
+            {
+                x -= this.sprite.texture.trim.x;
+                y -= this.sprite.texture.trim.y;
+
+                //  If the coordinates are outside the trim area we return false immediately, to save doing a draw call
+                if (x < this.sprite.texture.crop.x || x > this.sprite.texture.crop.right || y < this.sprite.texture.crop.y || y > this.sprite.texture.crop.bottom)
+                {
+                    this._dx = x;
+                    this._dy = y;
+                    return false;
+                }
+            }
+
+            this._dx = x;
+            this._dy = y;
+
+            this.game.input.hitContext.clearRect(0, 0, 1, 1);
             this.game.input.hitContext.drawImage(this.sprite.texture.baseTexture.source, x, y, 1, 1, 0, 0, 1, 1);
 
             var rgb = this.game.input.hitContext.getImageData(0, 0, 1, 1);
@@ -665,7 +786,7 @@ Phaser.InputHandler.prototype = {
     */
     update: function (pointer) {
 
-        if (this.sprite === null)
+        if (this.sprite === null || this.sprite.parent === undefined)
         {
             //  Abort. We've been destroyed.
             return;
@@ -711,7 +832,7 @@ Phaser.InputHandler.prototype = {
             return;
         }
 
-        if (this._pointerData[pointer.id].isOver === false)
+        if (this._pointerData[pointer.id].isOver === false || pointer.dirty)
         {
             this._pointerData[pointer.id].isOver = true;
             this._pointerData[pointer.id].isOut = false;
@@ -722,10 +843,13 @@ Phaser.InputHandler.prototype = {
             if (this.useHandCursor && this._pointerData[pointer.id].isDragged === false)
             {
                 this.game.canvas.style.cursor = "pointer";
-                this._setHandCursor = false;
+                this._setHandCursor = true;
             }
 
-            this.sprite.events.onInputOver.dispatch(this.sprite, pointer);
+            if (this.sprite && this.sprite.events)
+            {
+                this.sprite.events.onInputOver.dispatch(this.sprite, pointer);
+            }
         }
 
     },
@@ -785,7 +909,14 @@ Phaser.InputHandler.prototype = {
             this._pointerData[pointer.id].isDown = true;
             this._pointerData[pointer.id].isUp = false;
             this._pointerData[pointer.id].timeDown = this.game.time.now;
-            this.sprite.events.onInputDown.dispatch(this.sprite, pointer);
+    
+            if (this.sprite && this.sprite.events)
+            {
+                this.sprite.events.onInputDown.dispatch(this.sprite, pointer);
+            }
+
+            //  It's possible the onInputDown event created a new Sprite that is on-top of this one, so we ought to force a Pointer update
+            pointer.dirty = true;
 
             //  Start drag
             if (this.draggable && this.isDragged === false)
@@ -830,12 +961,18 @@ Phaser.InputHandler.prototype = {
             if (this.checkPointerOver(pointer))
             {
                 //  Release the inputUp signal and provide optional parameter if pointer is still over the sprite or not
-                this.sprite.events.onInputUp.dispatch(this.sprite, pointer, true);
+                if (this.sprite && this.sprite.events)
+                {
+                    this.sprite.events.onInputUp.dispatch(this.sprite, pointer, true);
+                }
             }
             else
             {
                 //  Release the inputUp signal and provide optional parameter if pointer is still over the sprite or not
-                this.sprite.events.onInputUp.dispatch(this.sprite, pointer, false);
+                if (this.sprite && this.sprite.events)
+                {
+                    this.sprite.events.onInputUp.dispatch(this.sprite, pointer, false);
+                }
 
                 //  Pointer outside the sprite? Reset the cursor
                 if (this.useHandCursor)
@@ -845,8 +982,11 @@ Phaser.InputHandler.prototype = {
                 }
             }
 
+            //  It's possible the onInputUp event created a new Sprite that is on-top of this one, so we ought to force a Pointer update
+            pointer.dirty = true;
+
             //  Stop drag
-            if (this.draggable && this.isDragged && this._draggedPointerID == pointer.id)
+            if (this.draggable && this.isDragged && this._draggedPointerID === pointer.id)
             {
                 this.stopDrag(pointer);
             }
@@ -1056,7 +1196,7 @@ Phaser.InputHandler.prototype = {
         this.dragOffset = new Phaser.Point();
         this.dragFromCenter = lockCenter;
 
-        this.pixelPerfect = pixelPerfect;
+        this.pixelPerfectClick = pixelPerfect;
         this.pixelPerfectAlpha = alphaThreshold;
 
         if (boundsRect)
@@ -1133,6 +1273,7 @@ Phaser.InputHandler.prototype = {
 
         if (this.bringToTop)
         {
+            this._dragPhase = true;
             this.sprite.bringToTop();
         }
 
@@ -1150,6 +1291,7 @@ Phaser.InputHandler.prototype = {
         this.isDragged = false;
         this._draggedPointerID = -1;
         this._pointerData[pointer.id].isDragged = false;
+        this._dragPhase = false;
 
         if (this.snapOnRelease)
         {
@@ -1238,7 +1380,7 @@ Phaser.InputHandler.prototype = {
         {
             if (this.sprite.cameraOffset.x < this.boundsRect.left)
             {
-                this.sprite.cameraOffset.x = this.boundsRect.cameraOffset.x;
+                this.sprite.cameraOffset.x = this.boundsRect.left;
             }
             else if ((this.sprite.cameraOffset.x + this.sprite.width) > this.boundsRect.right)
             {

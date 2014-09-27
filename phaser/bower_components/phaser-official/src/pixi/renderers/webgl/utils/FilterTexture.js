@@ -8,9 +8,10 @@
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param width {Number} the horizontal range of the filter
 * @param height {Number} the vertical range of the filter
+* @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
 * @private
 */
-PIXI.FilterTexture = function(gl, width, height)
+PIXI.FilterTexture = function(gl, width, height, scaleMode)
 {
     /**
      * @property gl
@@ -22,16 +23,23 @@ PIXI.FilterTexture = function(gl, width, height)
     this.frameBuffer = gl.createFramebuffer();
     this.texture = gl.createTexture();
 
+    scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
+
     gl.bindTexture(gl.TEXTURE_2D,  this.texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer );
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
 
+    // required for masking a mask??
+    this.renderBuffer = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.renderBuffer);
+  
     this.resize(width, height);
 };
 
@@ -43,7 +51,7 @@ PIXI.FilterTexture = function(gl, width, height)
 PIXI.FilterTexture.prototype.clear = function()
 {
     var gl = this.gl;
-
+    
     gl.clearColor(0,0,0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 };
@@ -67,6 +75,9 @@ PIXI.FilterTexture.prototype.resize = function(width, height)
     gl.bindTexture(gl.TEXTURE_2D,  this.texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
+    // update the stencil buffer width and height
+    gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width, height);
 };
 
 /**

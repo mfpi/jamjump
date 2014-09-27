@@ -21,22 +21,24 @@ PIXI.WebGLShaderManager = function(gl)
 
     this.setContext(gl);
     // the final one is used for the rendering strips
-    //this.stripShader = new PIXI.StripShader(gl);
 };
 
 
 /**
 * Initialises the context and the properties
-* @method setContext
+* @method setContext 
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param transparent {Boolean} Whether or not the drawing context should be transparent
 */
 PIXI.WebGLShaderManager.prototype.setContext = function(gl)
 {
     this.gl = gl;
-
+    
     // the next one is used for rendering primatives
     this.primitiveShader = new PIXI.PrimitiveShader(gl);
+
+    // the next one is used for rendering triangle strips
+    this.complexPrimitiveShader = new PIXI.ComplexPrimitiveShader(gl);
 
     // this shader is used for the default sprite rendering
     this.defaultShader = new PIXI.PixiShader(gl);
@@ -44,15 +46,16 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
     // this shader is used for the fast sprite rendering
     this.fastShader = new PIXI.PixiFastShader(gl);
 
-
-    this.activateShader(this.defaultShader);
+    // the next one is used for rendering triangle strips
+    this.stripShader = new PIXI.StripShader(gl);
+    this.setShader(this.defaultShader);
 };
 
 
 /**
-* Takes the attributes given in parameters
+* Takes the attributes given in parameters 
 * @method setAttribs
-* @param attribs {Array} attribs
+* @param attribs {Array} attribs 
 */
 PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
 {
@@ -76,7 +79,6 @@ PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
 
     for (i = 0; i < this.attribState.length; i++)
     {
-
         if(this.attribState[i] !== this.tempAttribState[i])
         {
             this.attribState[i] = this.tempAttribState[i];
@@ -93,48 +95,18 @@ PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
     }
 };
 
-/**
-* Sets-up the given shader
-*
-* @method activateShader
-* @param shader {Object} the shader that is going to be activated
-*/
-PIXI.WebGLShaderManager.prototype.activateShader = function(shader)
+PIXI.WebGLShaderManager.prototype.setShader = function(shader)
 {
-    //if(this.currentShader == shader)return;
+    if(this._currentId === shader._UID)return false;
+    
+    this._currentId = shader._UID;
 
     this.currentShader = shader;
 
     this.gl.useProgram(shader.program);
     this.setAttribs(shader.attributes);
 
-};
-
-/**
-* Triggers the primitive shader
-* @method activatePrimitiveShader
-*/
-PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
-{
-    var gl = this.gl;
-
-    gl.useProgram(this.primitiveShader.program);
-
-    this.setAttribs(this.primitiveShader.attributes);
-
-};
-
-/**
-* Disable the primitive shader
-* @method deactivatePrimitiveShader
-*/
-PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
-{
-    var gl = this.gl;
-
-    gl.useProgram(this.defaultShader.program);
-
-    this.setAttribs(this.defaultShader.attributes);
+    return true;
 };
 
 /**
@@ -149,9 +121,13 @@ PIXI.WebGLShaderManager.prototype.destroy = function()
 
     this.primitiveShader.destroy();
 
+    this.complexPrimitiveShader.destroy();
+
     this.defaultShader.destroy();
 
     this.fastShader.destroy();
+
+    this.stripShader.destroy();
 
     this.gl = null;
 };

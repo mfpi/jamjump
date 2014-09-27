@@ -14,7 +14,7 @@ PIXI.WebGLFilterManager = function(gl, transparent)
     this.transparent = transparent;
 
     this.filterStack = [];
-
+    
     this.offsetX = 0;
     this.offsetY = 0;
 
@@ -24,7 +24,7 @@ PIXI.WebGLFilterManager = function(gl, transparent)
 // API
 /**
 * Initialises the context and the properties
-* @method setContext
+* @method setContext 
 * @param gl {WebGLContext} the current WebGL drawing context
 */
 PIXI.WebGLFilterManager.prototype.setContext = function(gl)
@@ -36,10 +36,10 @@ PIXI.WebGLFilterManager.prototype.setContext = function(gl)
 };
 
 /**
-*
+* 
 * @method begin
-* @param renderSession {RenderSession}
-* @param buffer {ArrayBuffer}
+* @param renderSession {RenderSession} 
+* @param buffer {ArrayBuffer} 
 */
 PIXI.WebGLFilterManager.prototype.begin = function(renderSession, buffer)
 {
@@ -65,6 +65,8 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
     var projection = this.renderSession.projection;
     var offset = this.renderSession.offset;
 
+    filterBlock._filterArea = filterBlock.target.filterArea || filterBlock.target.getBounds();
+
 
     // filter program
     // OPTIMISATION - the first filter is free if its a simple color change?
@@ -72,8 +74,8 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 
     var filter = filterBlock.filterPasses[0];
 
-    this.offsetX += filterBlock.target.filterArea.x;
-    this.offsetY += filterBlock.target.filterArea.y;
+    this.offsetX += filterBlock._filterArea.x;
+    this.offsetY += filterBlock._filterArea.y;
 
     var texture = this.texturePool.pop();
     if(!texture)
@@ -87,15 +89,13 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 
     gl.bindTexture(gl.TEXTURE_2D,  texture.texture);
 
-    filterBlock.target.filterArea = filterBlock.target.getBounds();
+    var filterArea = filterBlock._filterArea;// filterBlock.target.getBounds();///filterBlock.target.filterArea;
 
-    var filterArea = filterBlock.target.filterArea;
-
-    var padidng = filter.padding;
-    filterArea.x -= padidng;
-    filterArea.y -= padidng;
-    filterArea.width += padidng * 2;
-    filterArea.height += padidng * 2;
+    var padding = filter.padding;
+    filterArea.x -= padding;
+    filterArea.y -= padding;
+    filterArea.width += padding * 2;
+    filterArea.height += padding * 2;
 
     // cap filter to screen size..
     if(filterArea.x < 0)filterArea.x = 0;
@@ -116,6 +116,8 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
     offset.y = -filterArea.y;
 
     // update projection
+    // now restore the regular shader..
+    this.renderSession.shaderManager.setShader(this.defaultShader);
     gl.uniform2f(this.defaultShader.projectionVector, filterArea.width/2, -filterArea.height/2);
     gl.uniform2f(this.defaultShader.offsetVector, -filterArea.x, -filterArea.y);
 
@@ -136,7 +138,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 {
     var gl = this.gl;
     var filterBlock = this.filterStack.pop();
-    var filterArea = filterBlock.target.filterArea;
+    var filterArea = filterBlock._filterArea;
     var texture = filterBlock._glFilterTexture;
     var projection = this.renderSession.projection;
     var offset = this.renderSession.offset;
@@ -229,7 +231,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     else
     {
         var currentFilter = this.filterStack[this.filterStack.length-1];
-        filterArea = currentFilter.target.filterArea;
+        filterArea = currentFilter._filterArea;
 
         sizeX = filterArea.width;
         sizeY = filterArea.height;
@@ -249,7 +251,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     offset.x = offsetX;
     offset.y = offsetY;
 
-    filterArea = filterBlock.target.filterArea;
+    filterArea = filterBlock._filterArea;
 
     var x = filterArea.x-offsetX;
     var y = filterArea.y-offsetY;
@@ -290,7 +292,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     // bind the buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, buffer );
 
-    // set the blend mode!
+    // set the blend mode! 
     //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
 
     // set texture
@@ -301,7 +303,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     this.applyFilterPass(filter, filterArea, sizeX, sizeY);
 
     // now restore the regular shader..
-    gl.useProgram(this.defaultShader.program);
+    this.renderSession.shaderManager.setShader(this.defaultShader);
     gl.uniform2f(this.defaultShader.projectionVector, sizeX/2, -sizeY/2);
     gl.uniform2f(this.defaultShader.offsetVector, -offsetX, -offsetY);
 
@@ -337,7 +339,9 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
     }
 
     // set the shader
-    gl.useProgram(shader.program);
+    this.renderSession.shaderManager.setShader(shader);
+
+//    gl.useProgram(shader.program);
 
     gl.uniform2f(shader.projectionVector, width/2, -height/2);
     gl.uniform2f(shader.offsetVector, 0,0);
@@ -439,15 +443,15 @@ PIXI.WebGLFilterManager.prototype.destroy = function()
     var gl = this.gl;
 
     this.filterStack = null;
-
+    
     this.offsetX = 0;
     this.offsetY = 0;
 
     // destroy textures
     for (var i = 0; i < this.texturePool.length; i++) {
-        this.texturePool.destroy();
+        this.texturePool[i].destroy();
     }
-
+    
     this.texturePool = null;
 
     //destroy buffers..

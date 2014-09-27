@@ -140,6 +140,25 @@ Phaser.Utils.Debug.prototype = {
     },
 
     /**
+    * Clears the Debug canvas.
+    *
+    * @method Phaser.Utils.Debug#reset
+    */
+    reset: function () {
+
+        if (this.context)
+        {
+            this.context.clearRect(0, 0, this.game.width, this.game.height);
+        }
+
+        if (this.sprite)
+        {
+            PIXI.updateWebGLTexture(this.baseTexture, this.game.renderer.gl);
+        }
+
+    },
+
+    /**
     * Internal method that resets and starts the debug output values.
     *
     * @method Phaser.Utils.Debug#start
@@ -244,7 +263,7 @@ Phaser.Utils.Debug.prototype = {
 
         if (sound.currentMarker !== '')
         {
-            this.line('Marker: ' + sound.currentMarker + ' Duration: ' + sound.duration);
+            this.line('Marker: ' + sound.currentMarker + ' Duration: ' + sound.duration + ' (ms: ' + sound.durationMS + ')');
             this.line('Start: ' + sound.markers[sound.currentMarker].start + ' Stop: ' + sound.markers[sound.currentMarker].stop);
             this.line('Position: ' + sound.position);
         }
@@ -267,8 +286,32 @@ Phaser.Utils.Debug.prototype = {
         this.start(x, y, color);
         this.line('Camera (' + camera.width + ' x ' + camera.height + ')');
         this.line('X: ' + camera.x + ' Y: ' + camera.y);
-        this.line('Bounds x: ' + camera.bounds.x + ' Y: ' + camera.bounds.y + ' w: ' + camera.bounds.width + ' h: ' + camera.bounds.height);
+
+        if (camera.bounds)
+        {
+            this.line('Bounds x: ' + camera.bounds.x + ' Y: ' + camera.bounds.y + ' w: ' + camera.bounds.width + ' h: ' + camera.bounds.height);
+        }
+
         this.line('View x: ' + camera.view.x + ' Y: ' + camera.view.y + ' w: ' + camera.view.width + ' h: ' + camera.view.height);
+        this.stop();
+
+    },
+
+    /**
+    * Render Timer information.
+    *
+    * @method Phaser.Utils.Debug#timer
+    * @param {Phaser.Timer} timer - The Phaser.Timer to show the debug information for.
+    * @param {number} x - X position of the debug info to be rendered.
+    * @param {number} y - Y position of the debug info to be rendered.
+    * @param {string} [color='rgb(255,255,255)'] - color of the debug info to be rendered. (format is css color string).
+    */
+    timer: function (timer, x, y, color) {
+
+        this.start(x, y, color);
+        this.line('Timer (running: ' + timer.running + ' expired: ' + timer.expired + ')');
+        this.line('Next Tick: ' + timer.next + ' Duration: ' + timer.duration);
+        this.line('Paused: ' + timer.paused + ' Length: ' + timer.length);
         this.stop();
 
     },
@@ -411,6 +454,21 @@ Phaser.Utils.Debug.prototype = {
         bounds.y += this.game.camera.y;
 
         this.rectangle(bounds, color, filled);
+
+    },
+    /**
+    * Renders the Rope's segments. Note: This is really expensive as it has to calculate new segments everytime you call it
+    *
+    * @method Phaser.Utils.Debug#ropeSegments
+    * @param {Phaser.Rope} rope - The rope to display the segments of.
+    * @param {string} [color] - Color of the debug info to be rendered (format is css color string).
+    * @param {boolean} [filled=true] - Render the rectangle as a fillRect (default, true) or a strokeRect (false)
+    */
+    ropeSegments: function(rope, color, filled) {
+        var segments = rope.segments;
+        segments.forEach(function(segment) {
+            this.rectangle(segment, color, filled);
+        }, this);
 
     },
 
@@ -669,12 +727,13 @@ Phaser.Utils.Debug.prototype = {
     },
 
     /**
-    * Render a Sprites Physics body if it has one set. Note this only works for Arcade Physics.
+    * Render a Sprites Physics body if it has one set. Note this only works for Arcade and
+    * Ninja (AABB, circle only) Physics.
     * To display a P2 body you should enable debug mode on the body when creating it.
     *
     * @method Phaser.Utils.Debug#body
     * @param {Phaser.Sprite} sprite - The sprite whos body will be rendered.
-    * @param {string} [color='rgb(255,255,255)'] - color of the debug info to be rendered. (format is css color string).
+    * @param {string} [color='rgba(0,255,0,0.4)'] - color of the debug info to be rendered. (format is css color string).
     * @param {boolean} [filled=true] - Render the objected as a filled (default, true) or a stroked (false)
     */
     body: function (sprite, color, filled) {
@@ -685,6 +744,12 @@ Phaser.Utils.Debug.prototype = {
             {
                 this.start();
                 Phaser.Physics.Arcade.Body.render(this.context, sprite.body, color, filled);
+                this.stop();
+            }
+            else if (sprite.body.type === Phaser.Physics.NINJA)
+            {
+                this.start();
+                Phaser.Physics.Ninja.Body.render(this.context, sprite.body, color, filled);
                 this.stop();
             }
         }

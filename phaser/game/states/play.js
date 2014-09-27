@@ -35,9 +35,9 @@
             this.game.input.keyboard.createCursorKeys())
           );
       this.myGameModelObject.init();
-        
+
       this.myGameModelObject2 = new JumpPlayer(
-          this.game,
+          this,
           this.sprite2,
           null);
       this.myGameModelObject2.init();

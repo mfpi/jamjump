@@ -1,6 +1,7 @@
 
   'use strict';
   var JumpPlayer = require('../model/player')
+  var WorldBlocks = require('../model/world')
   function Play() {}
   Play.prototype = {
     create: function() {
@@ -35,23 +36,16 @@
       //this.sprite.body.velocity.x = this.game.rnd.integerInRange(-500,500);
       //this.sprite.body.velocity.y = this.game.rnd.integerInRange(-500,500);
       // this.sprite.events.onInputDown.add(this.clickListener, this);
+      this.wb = new WorldBlocks(this.game);
 
       // Add some blocks to the world
-      this.block_group = this.game.add.group();
-      this.block_group.enableBody = true;
-      this.block_group.allowGravity = false;
-      this.block_group.immovable = true;
 
       for (i=0; i<30; i++) {
-        sp = this.block_group.create(i*19, this.game.height-150);
-        sp.loadTexture('allblocks', 2);
-        sp.body.immovable = true;
+        this.wb.addBlock(i, 18);
       }
 
      for (i=10; i<20; i++) {
-        sp = this.block_group.create(i*19, this.game.height-350);
-        sp.loadTexture('allblocks', 2);
-        sp.body.immovable = true;
+        this.wb.addBlock(i, 8);
       }
 
 
@@ -76,12 +70,13 @@
       // game.physics.enable( this.block_group , Phaser.Physics.ARCADE);
     },
     update: function() {
+      this.wb.update();
 
       this.myGameModelObject.update();
 
       var max_x_vel = 300;
 
-      this.game.physics.arcade.collide(this.block_group, this.sprite);
+      this.game.physics.arcade.collide(this.wb.block_group, this.sprite);
         
       if (this.cursors.left.isDown) {
           this.moveVector.x -= 30;
@@ -130,13 +125,10 @@
 
         if(this.game.time.now - comparetime > 1000) {
 
-          x = Math.floor(sprite.body.x / gridsize) * gridsize;
-          y = Math.floor(sprite.body.y / gridsize + 1) * gridsize;
+          x = Math.floor(sprite.body.x / gridsize);
+          y = Math.floor(sprite.body.y / gridsize + 1);
 
-          sp = this.block_group.create(x, y);
-          sp.loadTexture('allblocks', 2);
-          sp.body.immovable = true;
-          sp.body.setSize(20, 20, 2, 2);
+          this.wb.addBlock(x, y);
 
           sprite.lastBlockSet = this.game.time.now;
         }

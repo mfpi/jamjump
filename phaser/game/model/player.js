@@ -50,11 +50,17 @@ JumpPlayer.prototype = {
   },
 
   chooseSkin: function (skin_n) {
+
     if (skin_n < 2) {
-        this.sprite.loadTexture('allblocks', 22);
+        //this.sprite.loadTexture('runner', 1);
+        // this.sprite.loadTexture('allblocks', 22);
+
     } else {
-        this.sprite.loadTexture('allblocks', 42);
+        this.sprite.loadTexture('runner', 1);
+        // this.sprite.loadTexture('allblocks', 42);
+
     }
+
   },
 
   init: function() {

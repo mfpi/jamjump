@@ -57,7 +57,11 @@
         // console.log(o);
         temp_sprite = that.game.add.sprite(
           Math.random() * that.game.width,
-          Math.random() * (that.game.height / 2));
+          Math.random() * (that.game.height / 2),
+          'runner');
+
+        temp_sprite.animations.add('run');
+        temp_sprite.animations.play('run', 15, true);
 
         temp_player = new JumpPlayer(
           that,
@@ -88,6 +92,13 @@
       for (i=0; i<50; i++) {
         this.wb.addBlock(i, 30);
       }
+
+
+
+      // Set 1 color bg
+      this.game.stage.backgroundColor = 0x333333;
+
+
     },
     update: function() {
       var that = this;

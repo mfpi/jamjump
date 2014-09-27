@@ -60,7 +60,7 @@ WorldBlocks.prototype = {
         this.pendingAdds.forEach(function (v, i) {
             var coords = that.toWorldCoords(v.x, v.y);
             sp = that.block_group.create(coords.x, coords.y);
-            sp.loadTexture('allblocks', 2);
+            sp.loadTexture('redboxblock', 1);
             sp.body.immovable = true;
             sp.body.setSize(20, 20, 2, 2);
 

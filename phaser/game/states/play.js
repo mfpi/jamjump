@@ -1,10 +1,10 @@
-
   'use strict';
   var JumpPlayer = require('../model/player')
+  var JumpController = require('../model/controller')
   function Play() {}
   Play.prototype = {
     create: function() {
-      var i, sp;
+      var i, sp, ctrl;
       // this.game.load.tilemap('platformer', 'assets/platformer.json', null, Phaser.Tilemap.TILED_JSON);
       // this.game.load.image('spritesheet', 'assets/spritesheet.png');
 
@@ -13,55 +13,49 @@
       // var layer = map.createLayer('World1');
       // layer.resizeWorld();
 
-      this.myGameModelObject = new JumpPlayer();
-
+      // Enable physics for game
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
+      this.cursors = this.game.input.keyboard.createCursorKeys();
+
+      // Create a player object
       this.sprite = this.game.add.sprite(
         this.game.width/2,
         this.game.height/2);
-      this.sprite.loadTexture('allblocks', 22);
 
-      // this.sprite.inputEnabled = true;
-
-      this.game.physics.arcade.enable(this.sprite);
-      this.sprite.body.collideWorldBounds = true;
-      //this.sprite.body.bounce.setTo(1,1);
-      this.sprite.body.gravity.y = 350;
-
-      this.sprite.allowGravity = true;
-
-      //this.sprite.body.velocity.x = this.game.rnd.integerInRange(-500,500);
-      //this.sprite.body.velocity.y = this.game.rnd.integerInRange(-500,500);
-      // this.sprite.events.onInputDown.add(this.clickListener, this);
+      // Player object will further be handled by JumpPlayer class
+      this.myGameModelObject = new JumpPlayer(
+          this.game,
+          this.sprite,
+          new JumpController('keyb',
+            this.game.input.keyboard.createCursorKeys())
+          );
+      this.myGameModelObject.init();
 
       // Add some blocks to the world
       this.block_group = this.game.add.group();
       this.block_group.enableBody = true;
       this.block_group.allowGravity = false;
       this.block_group.immovable = true;
-
       for (i=0; i<30; i++) {
         sp = this.block_group.create(i*25, this.game.height-150);
         sp.loadTexture('allblocks', 2);
         sp.body.immovable = true;
       }
-
      for (i=10; i<20; i++) {
         sp = this.block_group.create(i*25, this.game.height-350);
         sp.loadTexture('allblocks', 2);
         sp.body.immovable = true;
       }
 
+      // Set up controls control
 
-      // Keyb control
-      this.cursors = this.game.input.keyboard.createCursorKeys();
       this.gamepad = this.game.input.gamepad;
       this.game.input.gamepad.start();
       this.game.input.gamepad.start();
       this.gamepad.start();
       this.moveVector = new Phaser.Point(0, 0);
-        
+
       this.game.input.gamepad.addCallbacks(this, {
           onConnect: function onConnect(i) {
               console.log("connect");
@@ -69,8 +63,14 @@
           onDown: function onDown(b, i, s) {
               console.log("down");
           }});
-        
-      var w = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
+
+      //
+      // Uncomment to set gamepad as controller :
+      //
+      //this.myGameModelObject.controller = new JumpController('gamepad',
+      //this.game.input.gamepad.pad2);*/
+
+      // var w = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
 
       // game.physics.enable( this.block_group , Phaser.Physics.ARCADE);
     },
@@ -81,14 +81,14 @@
       var max_x_vel = 300;
 
       this.game.physics.arcade.collide(this.block_group, this.sprite);
-        
+
       if (this.cursors.left.isDown) {
           this.moveVector.x -= 30;
       }
-        
+
       this.moveVector.x += 30*this.gamepad.pad2.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X);
-        
-      console.log(this.gamepad.pad2.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X));
+
+      // console.log(this.gamepad.pad2.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X));
 
       if (this.cursors.right.isDown) {
           this.moveVector.x += 30;
@@ -114,7 +114,7 @@
         this.moveVector.x = max_x_vel;
       }
       this.moveVector.x *= 0.98;
-         
+
       this.sprite.body.velocity = this.moveVector;
     },
     clickListener: function() {

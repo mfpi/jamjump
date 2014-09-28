@@ -157,10 +157,16 @@
 
               sprite.kill();
 
+              that.game.stateWinSuccess = false;
+              that.game.state.start('status');
+
             }
             if (that.wb.blocktypes[group.model.t].win) {
 
-              console.log("you win");
+
+              that.game.stateWinSuccess = true;
+              // this.console.log("you win");
+              that.game.state.start('status');
 
             }
 

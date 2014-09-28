@@ -107,6 +107,12 @@
           this.wb.addBlock(x, y, 'stone');
         } else if (theLevel[ch] === "3") {
           this.wb.addBlock(x, y, 'death');
+        } else if (theLevel[ch] === "x") {
+          this.game.players[0].sprite.x = x*19;
+          this.game.players[0].sprite.y = y*19;
+        } else if (theLevel[ch] === "y") {
+          this.game.players[1].sprite.x = x*19;
+          this.game.players[1].sprite.y = y*19;
         }
 
         x++;

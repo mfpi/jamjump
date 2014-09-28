@@ -46,6 +46,7 @@
       controller_map = {
           'keyb': cursors,
           'gamepad':gamepad.pad2,
+          'gamepad2':gamepad.pad1,
       };
 
       // A struct to collect players touching the winstone

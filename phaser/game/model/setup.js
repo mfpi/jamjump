@@ -4,13 +4,19 @@ function JumpSetup() {
     { name:"player1",
       skin:1,
       id:1,
-      controller:'keyb'
+      //controller:'keyb'
+      controller:'gamepad2'
     },
     { name:"player2",
       skin:2,
       id:2,
       controller:'gamepad'
     },
+    /*{ name:"player3",
+      skin:2,
+      id:3,
+      controller:'gamepad2'
+    },*/
   ];
 
   this.level = {};

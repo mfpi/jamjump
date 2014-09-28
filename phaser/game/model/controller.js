@@ -3,10 +3,12 @@ function JumpController(controllerType, controllerHandler, keyHandler) {
       return new JumpKeyboardController(controllerHandler, keyHandler);
     } else if (controllerType == 'gamepad') {
       return new JumpGamepadController(controllerHandler);
+    } else if (controllerType == 'gamepad2') {
+      return new JumpGamepadController(controllerHandler);
     } else if (controllerType == 'keyb2') {
       return new JumpGamepadController(controllerHandler);
     } else {
-      throw "Unknown controller-type ! Use 'keyb', 'keyb2' or 'gamepad'";
+      throw "Unknown controller-type ! Use 'keyb', 'keyb2' or 'gamepad/2'";
     }
 }
 

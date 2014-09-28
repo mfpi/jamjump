@@ -81,12 +81,6 @@
       // Set up the world / blocks
       //
       this.wb = new WorldBlocks(this.game);
-      //for (i=0; i<30; i++) {
-      //  this.wb.addBlock(i, 18);
-      //}
-      //for (i=10; i<20; i++) {
-      //  this.wb.addBlock(i, 8);
-      //}
 
       //
       // Load the level from the textfile
@@ -108,7 +102,7 @@
 
       // New jump mechanics nees a floor of blocks :
       for (i=0; i<50; i++) {
-        this.wb.addBlock(i, 30);
+        this.wb.addBlock(i, 30, 'stone');
       }
 
 

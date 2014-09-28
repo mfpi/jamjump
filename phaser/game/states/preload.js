@@ -30,6 +30,8 @@ Preload.prototype = {
     this.load.spritesheet('runner', 'assets/runner_sheet.png', 24,24, -1, 0, 0);
 
     this.load.image('redboxblock', 'assets/Block1.png');
+    this.load.image('stoneblock', 'assets/BlockStoneSmall19.png');
+
 
     // Create a game setup object
     this.game.gameSetup = new GameSetup();

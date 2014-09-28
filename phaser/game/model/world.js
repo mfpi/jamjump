@@ -11,6 +11,17 @@ function WorldBlocks (game) {
     this.block_group.enableBody = true;
     this.block_group.allowGravity = false;
     this.block_group.immovable = true;
+
+    this.blocktypes = {
+        'default': {
+            perma:false,
+            texture:['redboxblock', 1]
+        },
+        'stone': {
+            perma:true,
+            texture:['stoneblock', 1],
+        }
+    };
 }
 
 var gridsize=19;
@@ -22,12 +33,12 @@ WorldBlocks.prototype = {
 		{
 		    return 0;
 		}
-        return 1;			
-	    
+        return 1;
+
 	},
-    addBlock: function(x, y) {
-	    
-        this.pendingAdds.push({x:x, y:y});
+    addBlock: function(x, y, t) {
+        var t = t || 'default';
+        this.pendingAdds.push({x:x, y:y, t:t});
     },
     toWorldCoords: function(x, y) {
         return {x:x*19, y:y*19};
@@ -43,8 +54,12 @@ WorldBlocks.prototype = {
         var nearCoords = [];
         var keys = Object.keys(this.blocks);
         keys.forEach(function (v, k) {
-            nearCoords.push(that.blocks[v]);
-            });
+
+            // Consider only blocks that do not have perma-flag
+            if ( ! that.blocktypes[that.blocks[v].k.t].perma ) {
+                nearCoords.push(that.blocks[v]);
+            }
+        });
 
         nearCoords.sort(function (a, b) {
             if ((a.x - blockCoords.x)^2 + (a.y - blockCoords.y)^2 >
@@ -69,26 +84,17 @@ WorldBlocks.prototype = {
         var that = this;
         this.pendingAdds.forEach(function (v, i) {
             var coords = that.toWorldCoords(v.x, v.y);
-			
+
             sp = that.block_group.create(coords.x, coords.y);
-            sp.loadTexture('redboxblock', 1);
+            sp.loadTexture(that.blocktypes[v.t].texture[0], that.blocktypes[v.t].texture[1]);
             sp.body.immovable = true;
             sp.body.setSize(20, 20, 2, 2);
-			
-
-            // HACK !
-            // TODO : introduce a block type or so ...
-            //  this curde check prevnents "the ground" from beeing indexed,
-            //  thus, it is never considered for deletion
-            if (v.y < 30) {
-                that.blocks[hash(v.x, v.y)] = {k:v, v:sp};
-            }
+            that.blocks[hash(v.x, v.y)] = {k:v, v:sp};
 
             });
         this.pendingAdds = [];
 
         this.pendingRemoves.forEach(function (v, i) {
-            // console.log(v);
             if (v.key) {
                 v.key.v.kill();
                 delete that.blocks[hash(v.key.k.x, v.key.k.y)]

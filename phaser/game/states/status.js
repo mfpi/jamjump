@@ -13,8 +13,8 @@ GameOver.prototype = {
 
 
     var text = this.game.stateWinSuccess ?
-      "You reached the comet \n- you won" :
-      "You fell into lava \n - you lost";
+      "YOU REACHED THE COMET \n WIN!" :
+      "FELL INTO LAVA \n - YOU LOST";
     this.titleText = this.game.add.text(this.game.world.centerX,100, text, style);
 
 

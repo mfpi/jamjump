@@ -24,10 +24,18 @@ Preload.prototype = {
         4  // spacing
         );
 
+    this.load.text('level0', 'assets/levels/level0.txt');
+    this.load.text('level1', 'assets/levels/level1.txt');
+    this.load.text('level2', 'assets/levels/level2.txt');
+    this.load.text('level3', 'assets/levels/level3.txt');
+    this.game.level = 0;
 
-    this.load.text('testlevel', 'assets/levels/level3.txt');
-    this.game.level = 3;
-    this.game.testMyLevel = this.load.getAsset('text', 'testlevel');
+    this.game.levelData = [];
+    this.game.levelData[0] = this.load.getAsset('text', 'level0');
+    this.game.levelData[1] = this.load.getAsset('text', 'level1');
+    this.game.levelData[2] = this.load.getAsset('text', 'level2');
+    this.game.levelData[3] = this.load.getAsset('text', 'level3');
+
     this.load.spritesheet('runner', 'assets/runner_sheet2.png', 26, 24, -1, 0, 0);
 
     this.load.image('redboxblock', 'assets/Block1.png');

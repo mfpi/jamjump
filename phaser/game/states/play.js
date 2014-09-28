@@ -48,6 +48,8 @@
           'gamepad':gamepad.pad2,
       };
 
+      // A struct to collect players touching the winstone
+      this.game.winMap = {};
 
       //
       // Set up the players according to gameSetup
@@ -93,7 +95,10 @@
       //
       // Load the level from the textfile
       //
-      var theLevel = this.game.testMyLevel.file.data;
+      var theLevel = this.game.levelData[this.game.level].file.data;
+      //console.log(this.game.level);
+      //console.log(theLevel);
+
       var x = -1, y = 0;
       for (var ch in theLevel) {
         if (theLevel[ch] == "\n") {
@@ -147,7 +152,7 @@
 
       // Update world-blocks
       this.wb.update();
-        
+
       if (this.game.input.keyboard.isDown(Phaser.Keyboard.ENTER))
       {
           this.game.state.start("play");
@@ -168,16 +173,21 @@
 
               sprite.kill();
 
+              //that.game.level = (that.game.level +1 ) % that.game.levelData.length;
               that.game.stateWinSuccess = false;
               that.game.state.start('status');
+
 
             }
             if (that.wb.blocktypes[group.model.t].win) {
 
+              that.game.winMap[p.playerId] = true;
 
-              that.game.stateWinSuccess = true;
-              // this.console.log("you win");
-              that.game.state.start('status');
+              if (that.game.winMap['1'] && that.game.winMap['2']) {
+                that.game.level = (that.game.level +1 ) % that.game.levelData.length;
+                that.game.stateWinSuccess = true;
+                that.game.state.start('status');
+              }
 
             }
 

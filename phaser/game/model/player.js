@@ -121,12 +121,12 @@ JumpPlayer.prototype = {
     } else if (this.jumpStarted == false) {
         this.fullSpeedCounter = 0;
     }
-      
+
     if (this.fullSpeedCounter > this.fullSpeedTreshold) {
         this.sprite.body.velocity.x *= 2.0;
-    }    
-    
-      
+    }
+
+
     if (this.controller.getButtonBUp() && this.didDoubleJump == false) {
         this.canDoubleJump = true;
     }

@@ -25,7 +25,8 @@ Preload.prototype = {
         );
 
 
-    this.load.text('testlevel', 'assets/levels/level1.txt');
+    this.load.text('testlevel', 'assets/levels/level3.txt');
+    this.game.level = 3;
     this.game.testMyLevel = this.load.getAsset('text', 'testlevel');
     this.load.spritesheet('runner', 'assets/runner_sheet2.png', 26, 24, -1, 0, 0);
 

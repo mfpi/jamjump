@@ -14,6 +14,9 @@ function JumpPlayer(state, sprite, playerId, controller) {
     this.BLOCKCOST = 300;
     this.MAXBLOCKPOWER = 1000;
     this.NOREPEAT = 100;
+    if (this.game.level === 3) {
+        this.NOREPEAT = 200;
+    }
     this.DOUBLEJUMP_TRIGGER_VELOCITY = 15;  // max y-velocity to trigger double jump
 
     this.YDIFF_TO_STAND = 10;   // what y-diff signals "stand-on-block"

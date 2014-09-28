@@ -69,7 +69,12 @@ JumpPlayer.prototype = {
 
     // Set parameters of physics
     this.sprite.body.collideWorldBounds = true;
-    this.sprite.body.setSize(19, 14, 0, 5);
+    this.sprite.body.setSize(
+        14,  // width
+        14,  // height
+        2,   // offset-x
+        10    // offset-y
+        );
     this.sprite.body.gravity.y = 1050;
     console.log(this.sprite.body);
     this.sprite.allowGravity = true;

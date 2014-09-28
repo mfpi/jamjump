@@ -53,6 +53,7 @@
       // Set up the players according to gameSetup
       //
       this.game.players = [];
+      this.game.myPlayerGroup = this.game.add.group();
       this.game.gameSetup.players.forEach(function(o){
         // console.log(o);
         temp_sprite = that.game.add.sprite(
@@ -74,6 +75,9 @@
           temp_player.init();
           temp_player.chooseSkin(o.skin);
           that.game.players.push(temp_player);
+
+          // Add sprite to group of players
+          that.game.myPlayerGroup.add(temp_sprite);
       });
 
 
@@ -81,17 +85,13 @@
       // Set up the world / blocks
       //
       this.wb = new WorldBlocks(this.game);
-      //for (i=0; i<30; i++) {
-      //  this.wb.addBlock(i, 18);
-      //}
-      //for (i=10; i<20; i++) {
-      //  this.wb.addBlock(i, 8);
-      //}
 
+
+      // LEVEL / BLOCKS --------------------------------------
+      // TODO : move this to levelLoader component
       //
       // Load the level from the textfile
       //
-      // TODO : move this to levelLoader component
       var theLevel = this.game.testMyLevel.file.data;
       var x = 0, y = 0;
       for (var ch in theLevel) {
@@ -99,18 +99,29 @@
           y++;
           x = 0;
         }
+
         if (theLevel[ch] === "1") {
           this.wb.addBlock(x, y);
+        } else if (theLevel[ch] === "2") {
+          this.wb.addBlock(x, y, 'stone');
+        } else if (theLevel[ch] === "3") {
+          this.wb.addBlock(x, y, 'death');
         }
+
         x++;
       }
 
-
       // New jump mechanics nees a floor of blocks :
       for (i=0; i<50; i++) {
-        this.wb.addBlock(i, 30);
+        this.wb.addBlock(i, 30, 'stone');
       }
 
+      // ------------------------------------------------------
+
+      // All in group - draws in that order
+      this.game.rootGroup = this.game.add.group();
+      this.game.rootGroup.add(this.wb.block_group);
+      this.game.rootGroup.add(that.game.myPlayerGroup);
 
 
       // Set 1 color bg
@@ -127,11 +138,18 @@
       // Update all players
       this.game.players.forEach(function(p) {
 
+        // that.game.debug.body(p.sprite);
+
         // Physics - check collide
         that.game.physics.arcade.collide(
           that.wb.block_group,
           p.sprite,
           function (sprite, group) {
+
+            if (that.wb.blocktypes[group.model.t].kills) {
+              sprite.kill();
+            }
+
             p.registerBlockTouch(group);
           });
 
@@ -143,29 +161,28 @@
     },
 
     addBlock: function(player) {
-
-        var sp, x, y,
+      var sp, x, y,
           gridsize=19;
 
-		var sprite = this.game.players[0].sprite;
-        var otherSprite = this.game.players[1].sprite;
+      var sprite = this.game.players[0].sprite;
+      var otherSprite = this.game.players[1].sprite;
 
-		if (player == 1) {
-            sprite = this.game.players[0].sprite;
-            otherSprite = this.game.players[1].sprite;
-        } else if (player == 2) {
-            sprite = this.game.players[1].sprite;
-            otherSprite = this.game.players[0].sprite;
-        }
+      if (player == 1) {
+          sprite = this.game.players[0].sprite;
+          otherSprite = this.game.players[1].sprite;
+      } else if (player == 2) {
+          sprite = this.game.players[1].sprite;
+          otherSprite = this.game.players[0].sprite;
+      }
 
-          x = Math.floor(sprite.body.x / gridsize);
-          y = Math.floor(sprite.body.y / gridsize + 1);
-          if(this.wb.canAddBlock(x,y))
-		  {
-            this.wb.addBlock(x, y);
-            this.wb.removeClosestTo(otherSprite.body.x, otherSprite.body.y);
-            sprite.lastBlockSet = this.game.time.now;
-		  }
+      x = Math.floor(sprite.body.x / gridsize);
+      y = Math.floor(sprite.body.y / gridsize + 1);
+
+      if(this.wb.canAddBlock(x,y)) {
+        this.wb.addBlock(x, y);
+        this.wb.removeClosestTo(otherSprite.body.x, otherSprite.body.y);
+        sprite.lastBlockSet = this.game.time.now;
+      }
 
     },
     render: function() {

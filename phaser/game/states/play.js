@@ -104,6 +104,8 @@
           this.wb.addBlock(x, y);
         } else if (theLevel[ch] === "2") {
           this.wb.addBlock(x, y, 'stone');
+        } else if (theLevel[ch] === "3") {
+          this.wb.addBlock(x, y, 'death');
         }
 
         x++;
@@ -143,6 +145,11 @@
           that.wb.block_group,
           p.sprite,
           function (sprite, group) {
+
+            if (that.wb.blocktypes[group.model.t].kills) {
+              sprite.kill();
+            }
+
             p.registerBlockTouch(group);
           });
 

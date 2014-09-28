@@ -27,10 +27,11 @@ Preload.prototype = {
 
     this.load.text('testlevel', 'assets/levels/level1.txt');
     this.game.testMyLevel = this.load.getAsset('text', 'testlevel');
-    this.load.spritesheet('runner', 'assets/runner_sheet2.png', 24, 24, -1, 0, 0);
+    this.load.spritesheet('runner', 'assets/runner_sheet2.png', 26, 24, -1, 0, 0);
 
     this.load.image('redboxblock', 'assets/Block1.png');
     this.load.image('stoneblock', 'assets/BlockStoneSmall19.png');
+    this.load.image('deathblock', 'assets/BlockDanger.png');
 
 
     // Create a game setup object

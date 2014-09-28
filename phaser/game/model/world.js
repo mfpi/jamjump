@@ -15,12 +15,20 @@ function WorldBlocks (game) {
     this.blocktypes = {
         'default': {
             perma:false,
-            texture:['redboxblock', 1]
+            texture:['redboxblock', 1],
+            kills:false,
         },
         'stone': {
             perma:true,
             texture:['stoneblock', 1],
-        }
+            kills:false,
+        },
+        'death': {
+            perma:true,
+            texture:['deathblock', 1],
+            kills:true,
+        },
+
     };
 }
 
@@ -89,6 +97,7 @@ WorldBlocks.prototype = {
             sp.loadTexture(that.blocktypes[v.t].texture[0], that.blocktypes[v.t].texture[1]);
             sp.body.immovable = true;
             sp.body.setSize(20, 20, 2, 2);
+            sp.model = v;
             that.blocks[hash(v.x, v.y)] = {k:v, v:sp};
 
             });

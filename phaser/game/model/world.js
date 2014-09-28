@@ -98,9 +98,13 @@ WorldBlocks.prototype = {
         
         var foundNothing = coords.every(function (v, k) {
             if (that.blocks[hash(v[0], v[1])]) {
-                that.pendingRemoves.push({key:that.blocks[hash(v[0], v[1])]})
-                return false;
+                var b = that.blocks[hash(v[0], v[1])];
+                if (!that.blocktypes[b.k.t].perma)
+                {
+                    that.pendingRemoves.push({key:that.blocks[hash(v[0], v[1])]})
+                    return false;
                 }
+            }
             return true;
             });
         

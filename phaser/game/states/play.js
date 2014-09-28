@@ -45,7 +45,7 @@
 
       controller_map = {
           'keyb': cursors,
-          'gamepad':gamepad.pad1,
+          'gamepad':gamepad.pad2,
       };
 
 

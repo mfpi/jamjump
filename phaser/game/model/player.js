@@ -80,6 +80,7 @@ JumpPlayer.prototype = {
     this.sprite.allowGravity = true;
     this.fullSpeedTreshold = 300;
     this.fullSpeedCounter = 0;
+    this.didDoubleJump = false;
 
     // Default skin-1
     this.chooseSkin(1);
@@ -93,6 +94,7 @@ JumpPlayer.prototype = {
     if (dir >= this.YDIFF_TO_STAND) {
         this.jumpStarted = false;
         this.canDoubleJump = false;
+        this.didDoubleJump = false;
     };
   },
 
@@ -122,7 +124,7 @@ JumpPlayer.prototype = {
     }    
     
       
-    if (this.controller.getButtonBUp()) {
+    if (this.controller.getButtonBUp() && this.didDoubleJump == false) {
         this.canDoubleJump = true;
     }
 
@@ -135,6 +137,8 @@ JumpPlayer.prototype = {
 
         if ( this.canDoubleJump) {
             // double jump !
+
+            this.didDoubleJump = true;
             this.canDoubleJump = false;
             if (v.y > 0) {
                 v.y -= this.JUMPFORCE*1.5;

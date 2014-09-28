@@ -16,7 +16,7 @@
 	     this.blocksound = this.game.add.audio('blocksound');
 
       music = this.game.add.audio('bla');
-	    //music.play('',0,1,true);
+      music.play('',0,1,true);
 
       // this.game.load.tilemap('platformer', 'assets/platformer.json', null, Phaser.Tilemap.TILED_JSON);
       // this.game.load.image('spritesheet', 'assets/spritesheet.png');

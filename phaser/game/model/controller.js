@@ -35,6 +35,10 @@ JumpKeyboardController.prototype = {
   getButtonA: function() {
     return this.handler.down.isDown;
   },
+    
+  getButtonBUp: function() {
+    return this.handler.up.isUp;
+  },
 
   getButtonB: function() {
     return this.handler.up.isDown;
@@ -55,12 +59,17 @@ JumpGamepadController.prototype = {
   },
 
   getButtonA: function() {
-    return this.handler.isDown(Phaser.Gamepad.XBOX360_A);
+    return this.handler.isDown(Phaser.Gamepad.XBOX360_X);
   },
 
   getButtonB: function() {
-    return this.handler.isDown(Phaser.Gamepad.XBOX360_X);
+    return this.handler.isDown(Phaser.Gamepad.XBOX360_A);
   },
+
+  getButtonBUp: function() {
+    return this.handler.isUp(Phaser.Gamepad.XBOX360_A);
+  },
+
 };
 
 

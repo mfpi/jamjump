@@ -1,6 +1,6 @@
-function JumpController(controllerType, controllerHandler) {
+function JumpController(controllerType, controllerHandler, keyHandler) {
     if (controllerType == 'keyb') {
-      return new JumpKeyboardController(controllerHandler);
+      return new JumpKeyboardController(controllerHandler, keyHandler);
     } else if (controllerType == 'gamepad') {
       return new JumpGamepadController(controllerHandler);
     } else {
@@ -9,8 +9,9 @@ function JumpController(controllerType, controllerHandler) {
 }
 
 
-function JumpKeyboardController(controllerHandler) {
+function JumpKeyboardController(controllerHandler, keyHandler) {
   this.handler = controllerHandler;
+  this.keyHandler = keyHandler;
 }
 
 JumpKeyboardController.prototype = {
@@ -23,25 +24,28 @@ JumpKeyboardController.prototype = {
     if (this.handler.left.isDown) {
       x-=1.0;
     }
-    if (this.handler.up.isDown) {
-      y-=1.0;
-    }
-    if (this.handler.down.isDown) {
-      y+=1.0;
-    }
+    // if (this.handler.isDown(Phaser.Keyboard.KEY_W) {
+    //   y-=1.0;
+    // }
+    // if (this.handler.down.isDown) {
+    //   y+=1.0;
+    // }
     return {x:x, y:y};
   },
 
   getButtonA: function() {
-    return this.handler.down.isDown;
+    return this.handler.up.isDown;
   },
     
   getButtonBUp: function() {
-    return this.handler.up.isUp;
+    //return this.handler.up.isUp;
+    var k = this.keyHandler.addKey(Phaser.Keyboard.SPACEBAR);
+    return k.isUp;
   },
 
   getButtonB: function() {
-    return this.handler.up.isDown;
+    //return this.handler.up.isDown;
+    return this.keyHandler.isDown(Phaser.Keyboard.SPACEBAR);
   },
 };
 

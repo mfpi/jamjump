@@ -70,7 +70,8 @@
           o.id,
           new JumpController(
             o.controller,
-            controller_map[o.controller])
+            controller_map[o.controller],
+            that.game.input.keyboard)
           );
           temp_player.init();
           temp_player.chooseSkin(o.skin);

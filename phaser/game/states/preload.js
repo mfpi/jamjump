@@ -31,8 +31,12 @@ Preload.prototype = {
 
     this.load.image('redboxblock', 'assets/Block1.png');
     this.load.image('stoneblock', 'assets/BlockStoneSmall19.png');
-    this.load.image('deathblock', 'assets/BlockDanger.png');
+    //this.load.image('deathblock', 'assets/BlockDanger.png');
+    this.load.image('deathblock', 'assets/lavastein1.png');
 
+    this.load.image('background1', 'assets/bg1.png');
+    this.load.image('background2', 'assets/bg2.png');
+    this.load.image('background3', 'assets/bg3.png');
 
     // Create a game setup object
     this.game.gameSetup = new GameSetup();
@@ -43,6 +47,14 @@ Preload.prototype = {
 
     // text
     this.game.gui = new GUI(this.game, font);
+
+
+
+    var attackKey = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
+    attackKey.onDown.add(function() {
+      console.log("HEY");
+    });
+
   },
   create: function() {
     this.asset.cropEnabled = false;

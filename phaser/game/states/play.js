@@ -119,8 +119,12 @@
 
       // ------------------------------------------------------
 
+      // Background
+      temp_sprite = this.game.add.sprite(0,0, 'background2');
+
       // All in group - draws in that order
       this.game.rootGroup = this.game.add.group();
+      this.game.rootGroup.add(temp_sprite);
       this.game.rootGroup.add(this.wb.block_group);
       this.game.rootGroup.add(that.game.myPlayerGroup);
 

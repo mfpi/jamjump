@@ -4,7 +4,6 @@ function JumpSetup() {
     { name:"player1",
       skin:1,
       id:1,
-      //controller:'keyb'
       controller:'keyb'
     },
     { name:"player2",

@@ -13,10 +13,11 @@
         temp_player,
         controller_map;
       var music;
-	  this.blocksound = this.game.add.audio('blocksound');
-      
+	     this.blocksound = this.game.add.audio('blocksound');
+
       music = this.game.add.audio('bla');
-	  music.play('',0,1,true);
+	    //music.play('',0,1,true);
+
       // this.game.load.tilemap('platformer', 'assets/platformer.json', null, Phaser.Tilemap.TILED_JSON);
       // this.game.load.image('spritesheet', 'assets/spritesheet.png');
 
@@ -208,11 +209,11 @@
     addBlock: function(player) {
       var sp, x, y,
           gridsize=19;
-    
+
       var sprite = this.game.players[0].sprite;
       var otherSprite = this.game.players[1].sprite;
 
-	  
+
       if (player == 1) {
           sprite = this.game.players[0].sprite;
           otherSprite = this.game.players[1].sprite;

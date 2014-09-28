@@ -93,9 +93,13 @@
           y++;
           x = 0;
         }
+
         if (theLevel[ch] === "1") {
           this.wb.addBlock(x, y);
+        } else if (theLevel[ch] === "2") {
+          this.wb.addBlock(x, y, 'stone');
         }
+
         x++;
       }
 

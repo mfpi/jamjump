@@ -53,6 +53,7 @@
       // Set up the players according to gameSetup
       //
       this.game.players = [];
+      this.game.myPlayerGroup = this.game.add.group();
       this.game.gameSetup.players.forEach(function(o){
         // console.log(o);
         temp_sprite = that.game.add.sprite(
@@ -74,6 +75,9 @@
           temp_player.init();
           temp_player.chooseSkin(o.skin);
           that.game.players.push(temp_player);
+
+          // Add sprite to group of players
+          that.game.myPlayerGroup.add(temp_sprite);
       });
 
 
@@ -82,10 +86,12 @@
       //
       this.wb = new WorldBlocks(this.game);
 
+
+      // LEVEL / BLOCKS --------------------------------------
+      // TODO : move this to levelLoader component
       //
       // Load the level from the textfile
       //
-      // TODO : move this to levelLoader component
       var theLevel = this.game.testMyLevel.file.data;
       var x = 0, y = 0;
       for (var ch in theLevel) {
@@ -103,12 +109,17 @@
         x++;
       }
 
-
       // New jump mechanics nees a floor of blocks :
       for (i=0; i<50; i++) {
         this.wb.addBlock(i, 30, 'stone');
       }
 
+      // ------------------------------------------------------
+
+      // All in group - draws in that order
+      this.game.rootGroup = this.game.add.group();
+      this.game.rootGroup.add(this.wb.block_group);
+      this.game.rootGroup.add(that.game.myPlayerGroup);
 
 
       // Set 1 color bg
@@ -124,6 +135,8 @@
 
       // Update all players
       this.game.players.forEach(function(p) {
+
+        // that.game.debug.body(p.sprite);
 
         // Physics - check collide
         that.game.physics.arcade.collide(

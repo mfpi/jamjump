@@ -14,7 +14,9 @@ Preload.prototype = {
 
     this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
     this.load.setPreloadSprite(this.asset);
-
+  	this.load.audio('bla', 'assets/sound/pingsong.ogg');
+	this.load.audio('jumpsound','assets/sound/plop.ogg');
+    this.load.audio('blocksound', 'assets/sound/plopplop2.ogg');
 
     this.load.spritesheet('allblocks', 'assets/spritesheet_alpha.png',
         19,  // width

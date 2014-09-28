@@ -3,8 +3,10 @@ function JumpController(controllerType, controllerHandler, keyHandler) {
       return new JumpKeyboardController(controllerHandler, keyHandler);
     } else if (controllerType == 'gamepad') {
       return new JumpGamepadController(controllerHandler);
+    } else if (controllerType == 'keyb2') {
+      return new JumpGamepadController(controllerHandler);
     } else {
-      throw "Unknown controller-type ! Use 'keyb' or 'gamepad'";
+      throw "Unknown controller-type ! Use 'keyb', 'keyb2' or 'gamepad'";
     }
 }
 
@@ -36,7 +38,7 @@ JumpKeyboardController.prototype = {
   getButtonA: function() {
     return this.handler.up.isDown;
   },
-    
+
   getButtonBUp: function() {
     //return this.handler.up.isUp;
     var k = this.keyHandler.addKey(Phaser.Keyboard.SPACEBAR);
@@ -76,5 +78,43 @@ JumpGamepadController.prototype = {
 
 };
 
+
+function JumpKeyboardControllerAlternativ(controllerHandler) {
+  this.handler = controllerHandler;
+}
+
+JumpKeyboardControllerAlternativ.prototype = {
+  getDirection: function() {
+    var x=0, y=0;
+
+    if (this.handler.right.isDown) {
+      x+=1.0;
+    }
+    if (this.handler.left.isDown) {
+      x-=1.0;
+    }
+    if (this.handler.up.isDown) {
+      y-=1.0;
+    }
+    if (this.handler.down.isDown) {
+      y+=1.0;
+    }
+    return {x:x, y:y};
+  },
+
+  getButtonA: function() {
+    return this.handler.down.isDown;
+  },
+
+  getButtonBUp: function() {
+    return this.handler.up.isUp;
+  },
+
+  getButtonB: function() {
+    return this.handler.up.isDown;
+  },
+};
+
+// -----------------------------------------------------------
 
 module.exports = JumpController;

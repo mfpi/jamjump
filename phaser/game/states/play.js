@@ -113,6 +113,8 @@
         } else if (theLevel[ch] === "y") {
           this.game.players[1].sprite.x = x*19;
           this.game.players[1].sprite.y = y*19;
+        } else if (theLevel[ch] === "9") {
+          this.wb.addBlock(x, y, 'win');
         }
 
         x++;
@@ -125,8 +127,12 @@
 
       // ------------------------------------------------------
 
+      // Background
+      temp_sprite = this.game.add.sprite(0,0, 'background2');
+
       // All in group - draws in that order
       this.game.rootGroup = this.game.add.group();
+      this.game.rootGroup.add(temp_sprite);
       this.game.rootGroup.add(this.wb.block_group);
       this.game.rootGroup.add(that.game.myPlayerGroup);
 
@@ -141,6 +147,11 @@
 
       // Update world-blocks
       this.wb.update();
+        
+      if (this.game.input.keyboard.isDown(Phaser.Keyboard.ENTER))
+      {
+          this.game.state.start("play");
+      }
 
       // Update all players
       this.game.players.forEach(function(p) {
@@ -154,7 +165,14 @@
           function (sprite, group) {
 
             if (that.wb.blocktypes[group.model.t].kills) {
+
               sprite.kill();
+
+            }
+            if (that.wb.blocktypes[group.model.t].win) {
+
+              console.log("you win");
+
             }
 
             p.registerBlockTouch(group);

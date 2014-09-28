@@ -29,6 +29,7 @@ function JumpPlayer(state, sprite, playerId, controller) {
 
     this.actionTimers = {};
 
+	this.jumpsound = this.game.add.audio('jumpsound');
 }
 
 JumpPlayer.prototype = {
@@ -43,6 +44,7 @@ JumpPlayer.prototype = {
     // or if it is still blocked (timing constraints)
     // (in case it is possible, it will automatically reset the timer)
     var t = this.game.time.now;
+	
     if ( this.actionTimers[actionName] === undefined ||
         t - this.actionTimers[actionName] > this.NOREPEAT) {
         this.actionTimers[actionName] = t;
@@ -135,6 +137,7 @@ JumpPlayer.prototype = {
         // funny double jump mechanic
         if ( Math.abs(v.y) < 1 && !this.jumpStarted) {
           v.y -= this.JUMPFORCE; // jump force
+		  this.jumpsound.play();
           this.jumpStarted = true;
         }
 
@@ -143,6 +146,7 @@ JumpPlayer.prototype = {
 
             this.didDoubleJump = true;
             this.canDoubleJump = false;
+			this.jumpsound.play();
             if (v.y > 0) {
                 v.y -= this.JUMPFORCE*1.5;
             }

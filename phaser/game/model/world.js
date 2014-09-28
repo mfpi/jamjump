@@ -28,6 +28,12 @@ function WorldBlocks (game) {
             texture:['deathblock', 1],
             kills:true,
         },
+        'win': {
+            perma:true,
+            texture:['winblock', 1],
+            kills:false,
+            win:true,
+        },
 
     };
 }
@@ -62,7 +68,7 @@ WorldBlocks.prototype = {
         var that = this;
         var nearCoords = [];
         var keys = Object.keys(this.blocks);
-        
+
         var coords = [
             [blockCoords.x, blockCoords.y],
             [blockCoords.x, blockCoords.y - 1],
@@ -85,7 +91,7 @@ WorldBlocks.prototype = {
             [blockCoords.x-1, blockCoords.y+2],
             [blockCoords.x, blockCoords.y+2],
             [blockCoords.x+1, blockCoords.y+2],
-            [blockCoords.x+2, blockCoords.y+2],           
+            [blockCoords.x+2, blockCoords.y+2],
 
             [blockCoords.x-2, blockCoords.y-1],
             [blockCoords.x+2, blockCoords.y-1],
@@ -94,8 +100,8 @@ WorldBlocks.prototype = {
             [blockCoords.x-2, blockCoords.y+1],
             [blockCoords.x+2, blockCoords.y+1],
         ];
-        
-        
+
+
         var foundNothing = coords.every(function (v, k) {
             if (that.blocks[hash(v[0], v[1])]) {
                 var b = that.blocks[hash(v[0], v[1])];
@@ -107,7 +113,7 @@ WorldBlocks.prototype = {
             }
             return true;
             });
-        
+
         if (foundNothing == false) {
             return;
             }

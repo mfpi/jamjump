@@ -107,6 +107,8 @@
           this.wb.addBlock(x, y, 'stone');
         } else if (theLevel[ch] === "3") {
           this.wb.addBlock(x, y, 'death');
+        } else if (theLevel[ch] === "9") {
+          this.wb.addBlock(x, y, 'win');
         }
 
         x++;
@@ -152,7 +154,14 @@
           function (sprite, group) {
 
             if (that.wb.blocktypes[group.model.t].kills) {
+
               sprite.kill();
+
+            }
+            if (that.wb.blocktypes[group.model.t].win) {
+
+              console.log("you win");
+
             }
 
             p.registerBlockTouch(group);

@@ -31,7 +31,7 @@ Preload.prototype = {
 
     this.load.image('redboxblock', 'assets/Block1.png');
     this.load.image('stoneblock', 'assets/BlockStoneSmall19.png');
-    //this.load.image('deathblock', 'assets/BlockDanger.png');
+    this.load.image('winblock', 'assets/BlockDanger.png');
     this.load.image('deathblock', 'assets/lavastein1.png');
 
     this.load.image('background1', 'assets/bg1.png');

@@ -93,11 +93,11 @@
       // Load the level from the textfile
       //
       var theLevel = this.game.testMyLevel.file.data;
-      var x = 0, y = 0;
+      var x = -1, y = 0;
       for (var ch in theLevel) {
         if (theLevel[ch] == "\n") {
           y++;
-          x = 0;
+          x = -1;
         }
 
         if (theLevel[ch] === "1") {
@@ -112,9 +112,9 @@
       }
 
       // New jump mechanics nees a floor of blocks :
-      for (i=0; i<50; i++) {
-        this.wb.addBlock(i, 30, 'stone');
-      }
+      //for (i=0; i<50; i++) {
+      //  this.wb.addBlock(i, 30, 'stone');
+      //}
 
       // ------------------------------------------------------
 

@@ -21,6 +21,12 @@ GameOver.prototype = {
     this.titleText.anchor.setTo(0.5, 0.5);
   },
   update: function () {
+
+     if (this.game.input.keyboard.isDown(Phaser.Keyboard.ENTER))
+      {
+          this.game.state.start("play");
+      }
+
     if(this.game.input.activePointer.justPressed()) {
       this.game.state.start('play');
     }

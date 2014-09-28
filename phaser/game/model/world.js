@@ -57,10 +57,59 @@ WorldBlocks.prototype = {
         return {x:x, y:y};
     },
     removeClosestTo: function (x, y) {
-        var blockCoords = this.fromWorldCoords(x, y);
+        var blockCoords2 = this.fromWorldCoords(x, y);
+        var blockCoords = {x:blockCoords2.x+1, y:blockCoords2.y};
         var that = this;
         var nearCoords = [];
         var keys = Object.keys(this.blocks);
+        
+        var coords = [
+            [blockCoords.x, blockCoords.y],
+            [blockCoords.x, blockCoords.y - 1],
+            [blockCoords.x - 1, blockCoords.y - 1],
+            [blockCoords.x + 1, blockCoords.y - 1],
+            [blockCoords.x, blockCoords.y + 1],
+            [blockCoords.x-1, blockCoords.y],
+            [blockCoords.x+1, blockCoords.y],
+            [blockCoords.x-1, blockCoords.y+1],
+            [blockCoords.x, blockCoords.y+1],
+            [blockCoords.x+1, blockCoords.y+1],
+
+            [blockCoords.x-2, blockCoords.y-2],
+            [blockCoords.x-1, blockCoords.y-2],
+            [blockCoords.x, blockCoords.y-2],
+            [blockCoords.x+1, blockCoords.y-2],
+            [blockCoords.x+2, blockCoords.y-2],
+
+            [blockCoords.x-2, blockCoords.y+2],
+            [blockCoords.x-1, blockCoords.y+2],
+            [blockCoords.x, blockCoords.y+2],
+            [blockCoords.x+1, blockCoords.y+2],
+            [blockCoords.x+2, blockCoords.y+2],           
+
+            [blockCoords.x-2, blockCoords.y-1],
+            [blockCoords.x+2, blockCoords.y-1],
+            [blockCoords.x-2, blockCoords.y],
+            [blockCoords.x+2, blockCoords.y],
+            [blockCoords.x-2, blockCoords.y+1],
+            [blockCoords.x+2, blockCoords.y+1],
+        ];
+        
+        
+        var foundNothing = coords.every(function (v, k) {
+            if (that.blocks[hash(v[0], v[1])]) {
+                that.pendingRemoves.push({key:that.blocks[hash(v[0], v[1])]})
+                return false;
+                }
+            return true;
+            });
+        
+        if (foundNothing == false) {
+            return;
+            }
+        console.log(blockCoords);
+        console.log(that.pendingRemoves);
+
         keys.forEach(function (v, k) {
 
             // Consider only blocks that do not have perma-flag

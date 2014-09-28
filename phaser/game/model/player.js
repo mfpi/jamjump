@@ -78,6 +78,9 @@ JumpPlayer.prototype = {
     this.sprite.body.gravity.y = 1050;
     console.log(this.sprite.body);
     this.sprite.allowGravity = true;
+    this.fullSpeedTreshold = 300;
+    this.fullSpeedCounter = 0;
+    this.didDoubleJump = false;
 
     // Default skin-1
     this.chooseSkin(1);
@@ -91,6 +94,7 @@ JumpPlayer.prototype = {
     if (dir >= this.YDIFF_TO_STAND) {
         this.jumpStarted = false;
         this.canDoubleJump = false;
+        this.didDoubleJump = false;
     };
   },
 
@@ -109,19 +113,39 @@ JumpPlayer.prototype = {
 
     // Direct mapping of controller-x to player velocity
     this.sprite.body.velocity.x = this.controller.getDirection().x*140;
+    if (Math.abs(this.sprite.body.velocity.x) > 100 && this.jumpStarted == false) {
+        this.fullSpeedCounter += time_passed;
+    } else if (this.jumpStarted == false) {
+        this.fullSpeedCounter = 0;
+    }
+      
+    if (this.fullSpeedCounter > this.fullSpeedTreshold) {
+        this.sprite.body.velocity.x *= 2.0;
+    }    
+    
+      
+    if (this.controller.getButtonBUp() && this.didDoubleJump == false) {
+        this.canDoubleJump = true;
+    }
 
     if (this.controller.getButtonB()) {
         // funny double jump mechanic
         if ( Math.abs(v.y) < 1 && !this.jumpStarted) {
           v.y -= this.JUMPFORCE; // jump force
           this.jumpStarted = true;
-          this.canDoubleJump = true;
         }
 
-        if ( Math.abs(v.y) < this.DOUBLEJUMP_TRIGGER_VELOCITY && this.canDoubleJump) {
+        if ( this.canDoubleJump) {
             // double jump !
+
+            this.didDoubleJump = true;
             this.canDoubleJump = false;
-            v.y -= this.JUMPFORCE; // jump force
+            if (v.y > 0) {
+                v.y -= this.JUMPFORCE*1.5;
+            }
+            else {
+                v.y -= this.JUMPFORCE; // jump force
+            }
         }
 
     }

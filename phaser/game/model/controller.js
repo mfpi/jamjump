@@ -1,31 +1,36 @@
-function JumpController(controllerType, controllerHandler, keyHandler) {
+function JumpController(controllerType, controllerHandler, settings) {
     if (controllerType == 'keyb') {
-      return new JumpKeyboardController(controllerHandler, keyHandler);
+      return new JumpKeyboardController(controllerHandler, settings);
     } else if (controllerType == 'gamepad') {
-      return new JumpGamepadController(controllerHandler);
+      return new JumpGamepadController(controllerHandler, settings);
     } else if (controllerType == 'gamepad2') {
-      return new JumpGamepadController(controllerHandler);
+      return new JumpGamepadController(controllerHandler, settings);
     } else if (controllerType == 'keyb2') {
-      return new JumpGamepadController(controllerHandler);
+      return new JumpGamepadController(controllerHandler, settings);
     } else {
       throw "Unknown controller-type ! Use 'keyb', 'keyb2' or 'gamepad/2'";
     }
 }
 
 
-function JumpKeyboardController(controllerHandler, keyHandler) {
-  this.handler = controllerHandler;
-  this.keyHandler = keyHandler;
+function JumpKeyboardController(controllerHandler, settings) {
+  // setting keys according to settings parameter
+  this.keys = {
+    'left': controllerHandler.addKey(settings.left),
+    'right': controllerHandler.addKey(settings.right),
+    'jump': controllerHandler.addKey(settings.jump),
+    'block': controllerHandler.addKey(settings.block),
+  }
 }
 
 JumpKeyboardController.prototype = {
   getDirection: function() {
     var x=0, y=0;
 
-    if (this.handler.right.isDown) {
+    if (this.keys.right.isDown) {
       x+=1.0;
     }
-    if (this.handler.left.isDown) {
+    if (this.keys.left.isDown) {
       x-=1.0;
     }
     // if (this.handler.isDown(Phaser.Keyboard.KEY_W) {
@@ -38,18 +43,15 @@ JumpKeyboardController.prototype = {
   },
 
   getButtonA: function() {
-    return this.handler.up.isDown;
+    return this.keys.block.isDown;
   },
 
   getButtonBUp: function() {
-    //return this.handler.up.isUp;
-    var k = this.keyHandler.addKey(Phaser.Keyboard.SPACEBAR);
-    return k.isUp;
+    return this.keys.jump.isUp;
   },
 
   getButtonB: function() {
-    //return this.handler.up.isDown;
-    return this.keyHandler.isDown(Phaser.Keyboard.SPACEBAR);
+    return this.keys.jump.isDown;
   },
 };
 

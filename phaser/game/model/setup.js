@@ -10,7 +10,7 @@ function JumpSetup() {
     { name:"player2",
       skin:2,
       id:2,
-      controller:'gamepad'
+      controller:'keyb2'
     },
     /*{ name:"player3",
       skin:2,
@@ -22,6 +22,8 @@ function JumpSetup() {
   this.level = {};
   this.level_skin = 'blub';
   this.sound = 'blah';
+
+  this.backgroundMusic;     // a phaser music asset to be started at level enter
 
 }
 

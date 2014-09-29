@@ -15,8 +15,11 @@
       var music;
 	     this.blocksound = this.game.add.audio('blocksound');
 
-      music = this.game.add.audio('bla');
-	    //music.play('',0,1,true);
+       // Start background music if it is set in gameSetup
+      if (this.game.gameSetup.backgroundMusic) {
+        this.game.gameSetup.backgroundMusic.play('',0,1,true);
+      }
+
 
       // this.game.load.tilemap('platformer', 'assets/platformer.json', null, Phaser.Tilemap.TILED_JSON);
       // this.game.load.image('spritesheet', 'assets/spritesheet.png');
@@ -48,10 +51,22 @@
           //}
         });
 
+      // Map to init controllers
+      // The constructor of the controller w
       controller_map = {
-          'keyb': cursors,
-          'gamepad':gamepad.pad1,
-          //'gamepad2':gamepad.pad1,
+
+          'keyb': new JumpController('keyb', this.game.input.keyboard,
+              {left:Phaser.Keyboard.A, right: Phaser.Keyboard.D, jump: Phaser.Keyboard.W, block: Phaser.Keyboard.S}
+              ),
+          'keyb2': new JumpController('keyb', this.game.input.keyboard,
+              {left:Phaser.Keyboard.LEFT, right: Phaser.Keyboard.RIGHT, jump: Phaser.Keyboard.UP, block: Phaser.Keyboard.DOWN}
+              ),
+          'keyb3': new JumpController('keyb', this.game.input.keyboard,
+              {left:Phaser.Keyboard.LEFT, right: Phaser.Keyboard.RIGHT, jump: Phaser.Keyboard.SPACE, block: Phaser.Keyboard.UP}
+              ),
+
+          'gamepad': new JumpController('gamepad', gamepad.pad1, {}),
+          'gamepad2': new JumpController('gamepad', gamepad.pad2, {}),
       };
 
       // A struct to collect players touching the winstone
@@ -63,7 +78,7 @@
       this.game.players = [];
       this.game.myPlayerGroup = this.game.add.group();
       this.game.gameSetup.players.forEach(function(o){
-        // console.log(o);
+        console.log(o);
         temp_sprite = that.game.add.sprite(
           Math.random() * that.game.width,
           Math.random() * (that.game.height / 2),
@@ -76,10 +91,7 @@
           that,
           temp_sprite,
           o.id,
-          new JumpController(
-            o.controller,
-            controller_map[o.controller],
-            that.game.input.keyboard)
+          controller_map[o.controller]
           );
           temp_player.init();
           temp_player.chooseSkin(o.skin);

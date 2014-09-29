@@ -77,7 +77,6 @@
       this.game.players = [];
       this.game.myPlayerGroup = this.game.add.group();
       this.game.gameSetup.players.forEach(function(o){
-        console.log(o);
         temp_sprite = that.game.add.sprite(
           Math.random() * that.game.width,
           Math.random() * (that.game.height / 2),

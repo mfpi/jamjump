@@ -5,7 +5,6 @@ function JumpSetup() {
       skin:1,
       id:1,
       controller:'keyb'
-      // controller:'gamepad2'
     },
     { name:"player2",
       skin:2,

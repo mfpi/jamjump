@@ -15,7 +15,7 @@
       var music;
 	     this.blocksound = this.game.add.audio('blocksound');
 
-       // Start background music if it is set in gameSetup
+       // Start background music. If is kept somewhere, will not play multiple times
       if (this.game.gameSetup.backgroundMusic) {
         this.game.gameSetup.backgroundMusic.play('',0,1,true);
       }
@@ -54,7 +54,6 @@
       // Map to init controllers
       // The constructor of the controller w
       controller_map = {
-
           'keyb': new JumpController('keyb', this.game.input.keyboard,
               {left:Phaser.Keyboard.A, right: Phaser.Keyboard.D, jump: Phaser.Keyboard.W, block: Phaser.Keyboard.S}
               ),

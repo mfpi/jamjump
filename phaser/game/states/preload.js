@@ -30,6 +30,7 @@ Preload.prototype = {
     this.load.text('level1', 'assets/levels/level1.txt');
     this.load.text('level2', 'assets/levels/level2.txt');
     this.load.text('level3', 'assets/levels/level3.txt');
+    this.load.text('level4', 'assets/levels/level4.txt');
     this.game.level = 0;
 
     this.game.levelData = [];
@@ -37,6 +38,7 @@ Preload.prototype = {
     this.game.levelData[1] = this.load.getAsset('text', 'level1');
     this.game.levelData[2] = this.load.getAsset('text', 'level2');
     this.game.levelData[3] = this.load.getAsset('text', 'level3');
+    this.game.levelData[4] = this.load.getAsset('text', 'level4');
 
     this.load.spritesheet('runner', 'assets/runner_sheet2.png', 26, 24, -1, 0, 0);
     this.load.image('titlecharacter', 'assets/komischgucker_alpha.png');
@@ -46,9 +48,9 @@ Preload.prototype = {
     this.load.image('winblock', 'assets/BlockDanger.png');
     this.load.image('deathblock', 'assets/lavastein1.png');
 
-    this.load.image('background1', 'assets/bg1.png');
-    this.load.image('background2', 'assets/bg2.png');
-    this.load.image('background3', 'assets/bg3.png');
+    this.load.image('background1', 'assets/bg1_lo.png');
+    this.load.image('background2', 'assets/bg2_lo.png');
+    this.load.image('background3', 'assets/bg3_lo.png');
 
     // Create a game setup object
     this.game.gameSetup = new GameSetup();

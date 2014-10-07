@@ -14,8 +14,11 @@ GameOver.prototype = {
 
     var text = this.game.stateWinSuccess ?
       "YOU REACHED \n THE COMET \n WIN!" :
-      "FELL INTO LAVA \n - YOU LOST";
-    this.titleText = this.game.add.text(this.game.world.centerX,100, text, style);
+      "FELL INTO LAVA \n - YOU LOST ";
+
+    text +="\n (enter to continue)";
+
+    this.titleText = this.game.add.text(this.game.world.centerX, 300, text, style);
 
 
     this.titleText.anchor.setTo(0.5, 0.5);

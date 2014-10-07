@@ -99,7 +99,7 @@ WorldBlocks.prototype = {
             [blockCoords.x+2, blockCoords.y],
             [blockCoords.x-2, blockCoords.y+1],
             [blockCoords.x+2, blockCoords.y+1],
-            
+
             [blockCoords.x-3, blockCoords.y-3],
             [blockCoords.x-2, blockCoords.y-3],
             [blockCoords.x-1, blockCoords.y-3],
@@ -107,7 +107,7 @@ WorldBlocks.prototype = {
             [blockCoords.x+1, blockCoords.y-3],
             [blockCoords.x+2, blockCoords.y-3],
             [blockCoords.x+3, blockCoords.y-3],
-            
+
             [blockCoords.x-3, blockCoords.y+3],
             [blockCoords.x-2, blockCoords.y+3],
             [blockCoords.x-1, blockCoords.y+3],
@@ -126,7 +126,7 @@ WorldBlocks.prototype = {
             [blockCoords.x+3, blockCoords.y-1],
             [blockCoords.x-3, blockCoords.y-2],
             [blockCoords.x+3, blockCoords.y-2],
-            
+
             [blockCoords.x-4, blockCoords.y+4],
             [blockCoords.x-3, blockCoords.y+4],
             [blockCoords.x-2, blockCoords.y+4],
@@ -136,7 +136,7 @@ WorldBlocks.prototype = {
             [blockCoords.x+2, blockCoords.y+4],
             [blockCoords.x+3, blockCoords.y+4],
             [blockCoords.x+4, blockCoords.y+4],
-           
+
 
             [blockCoords.x-4, blockCoords.y-4],
             [blockCoords.x-3, blockCoords.y-4],
@@ -147,7 +147,7 @@ WorldBlocks.prototype = {
             [blockCoords.x+2, blockCoords.y-4],
             [blockCoords.x+3, blockCoords.y-4],
             [blockCoords.x+4, blockCoords.y-4],
-            
+
             [blockCoords.x-4, blockCoords.y+3],
             [blockCoords.x+4, blockCoords.y+3],
             [blockCoords.x-4, blockCoords.y+2],
@@ -162,7 +162,7 @@ WorldBlocks.prototype = {
             [blockCoords.x+4, blockCoords.y-2],
             [blockCoords.x-4, blockCoords.y-3],
             [blockCoords.x+4, blockCoords.y-3],
-            
+
             [blockCoords.x-5, blockCoords.y+4],
             [blockCoords.x+5, blockCoords.y+4],
             [blockCoords.x-5, blockCoords.y+3],
@@ -181,7 +181,7 @@ WorldBlocks.prototype = {
             [blockCoords.x+5, blockCoords.y-3],
             [blockCoords.x-5, blockCoords.y-4],
             [blockCoords.x+5, blockCoords.y-4],
-            
+
             [blockCoords.x-4, blockCoords.y-5],
             [blockCoords.x-3, blockCoords.y-5],
             [blockCoords.x-2, blockCoords.y-5],
@@ -192,7 +192,7 @@ WorldBlocks.prototype = {
             [blockCoords.x+3, blockCoords.y-5],
             [blockCoords.x+4, blockCoords.y-5],
             [blockCoords.x+5, blockCoords.y-5],
-            
+
             [blockCoords.x-4, blockCoords.y+5],
             [blockCoords.x-3, blockCoords.y+5],
             [blockCoords.x-2, blockCoords.y+5],
@@ -221,8 +221,8 @@ WorldBlocks.prototype = {
         if (foundNothing == false) {
             return;
             }
-        console.log(blockCoords);
-        console.log(that.pendingRemoves);
+        //console.log(blockCoords);
+        //console.log(that.pendingRemoves);
 
         keys.forEach(function (v, k) {
 

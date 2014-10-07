@@ -39,6 +39,7 @@ Preload.prototype = {
     this.game.levelData[3] = this.load.getAsset('text', 'level3');
 
     this.load.spritesheet('runner', 'assets/runner_sheet2.png', 26, 24, -1, 0, 0);
+    this.load.image('titlecharacter', 'assets/komischgucker_alpha.png');
 
     this.load.image('redboxblock', 'assets/Block1.png');
     this.load.image('stoneblock', 'assets/BlockStoneSmall19.png');
@@ -52,6 +53,8 @@ Preload.prototype = {
     // Create a game setup object
     this.game.gameSetup = new GameSetup();
 
+    this.game.gameSetup.backgroundMusic = this.game.add.audio('bla');
+
     var font = this.game.load.bitmapFont('nokia',
             'assets/fonts/nokia.png',
             'assets/fonts/nokia.xml');
@@ -60,20 +63,13 @@ Preload.prototype = {
     this.game.gui = new GUI(this.game, font);
 
 
-
-    var attackKey = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
-    attackKey.onDown.add(function() {
-      console.log("HEY");
-    });
-
   },
   create: function() {
     this.asset.cropEnabled = false;
   },
   update: function() {
     if(!!this.ready) {
-      // this.game.state.start('menu');
-      this.game.state.start('play');
+      this.game.state.start('menu');
     }
   },
   onLoadComplete: function() {

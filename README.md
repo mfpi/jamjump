@@ -29,6 +29,8 @@ which unfortunately makes another block somewhere else on the map vanish.
 # Screenshots
 
 ![Title](https://raw.githubusercontent.com/mfit/jamjump/master/press/jamjump_screen1.png)
+![Gameplay](https://raw.githubusercontent.com/mfit/jamjump/master/press/jamjump_screen2.png)
+![Gameplay](https://raw.githubusercontent.com/mfit/jamjump/master/press/jamjump_screen3.png)
 
 
 

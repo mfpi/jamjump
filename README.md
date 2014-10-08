@@ -25,6 +25,10 @@ Both players have to reach a special glowing spot on the map (the 'comet') to
 complete the level. To do so, they have to create blocks out of thin air -
 which unfortunately makes another block somewhere else on the map vanish.
 
+## Technical details
+- Javascript/HTML5 browser game, using http://phaser.io/ (http://www.pixijs.com/)
+- Controls : keyboard and/or gamepads (online demo only keyboard control)
+
 
 # Screenshots
 

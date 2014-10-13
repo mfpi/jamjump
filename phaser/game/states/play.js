@@ -215,6 +215,14 @@
       });
 
       this.game.gui.update();
+
+      //
+      // Test for pause key
+      //
+      if (this.game.input.keyboard.isDown(Phaser.Keyboard.ESC)) {
+          this.game.state.start("menu");
+      }
+
     },
 
     addBlock: function(player) {

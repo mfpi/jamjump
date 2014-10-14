@@ -65,6 +65,12 @@ Preload.prototype = {
     this.game.gui = new GUI(this.game, font);
 
 
+    //
+    // Test tiled maps:
+    //
+    this.load.image('tileset', 'assets/blocks_tiles.png'); // loading the tileset image
+    this.load.tilemap('map', 'assets/test.json', null, Phaser.Tilemap.TILED_JSON); // loading the tilemap
+
   },
   create: function() {
     this.asset.cropEnabled = false;

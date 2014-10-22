@@ -183,31 +183,9 @@
         that.game.physics.arcade.collide(
           that.wb.block_group,
           p.sprite,
-          function (sprite, group) {
-
-            if (that.wb.blocktypes[group.model.t].kills) {
-
-              sprite.kill();
-
-              //that.game.level = (that.game.level +1 ) % that.game.levelData.length;
-              that.game.stateWinSuccess = false;
-              that.game.state.start('status');
-
-
-            }
-            if (that.wb.blocktypes[group.model.t].win) {
-
-              that.game.winMap[p.playerId] = true;
-
-              if (that.game.winMap['1'] && that.game.winMap['2']) {
-                that.game.level = (that.game.level +1 ) % that.game.levelData.length;
-                that.game.stateWinSuccess = true;
-                that.game.state.start('status');
-              }
-
-            }
-
-            p.registerBlockTouch(group);
+          function (sprite, group_sprite) {
+            group_sprite.model.handlePlayerCollision(p);
+            p.registerBlockTouch(group_sprite);
           });
 
         // Player updates

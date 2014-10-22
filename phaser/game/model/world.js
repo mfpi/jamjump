@@ -1,3 +1,48 @@
+function Block() {
+}
+
+Block.prototype.handlePlayerCollision = function (playerSprite) {
+}
+
+function DefaultBlock() {
+    this.texture = ['redboxblock', 1];
+}
+
+DefaultBlock.prototype = new Block();
+
+function StoneBlock() {
+    this.texture = ['stoneblock', 1];
+}
+
+StoneBlock.prototype = new Block();
+
+function DeathBlock(game) {
+    this.game = game;
+    this.texture = ['deathblock', 1];
+}
+
+DeathBlock.prototype = new Block();
+DeathBlock.prototype.handlePlayerCollision = function (player) {
+    player.sprite.kill();
+    this.game.stateWinSuccess = false;
+    this.game.state.start('status');
+}
+
+function WinBlock(game) {
+    this.game = game;
+    this.texture = ['winblock', 1];
+}
+
+WinBlock.prototype = new Block();
+WinBlock.prototype.handlePlayerCollision = function (player) {
+    this.game.winMap[p.playerId] = true;
+    if (this.game.winMap['1'] && that.game.winMap['2']) {
+        this.game.level = (this.game.level + 1) % this.game.levelData.length;
+        this.game.stateWinSuccess = true;
+        this.game.state.start('status');
+    }
+}
+
 function hash(x, y) {
     return (x + ',' + y);
 }
@@ -14,21 +59,25 @@ function WorldBlocks (game) {
 
     this.blocktypes = {
         'default': {
+            constr:new DefaultBlock(),
             perma:false,
             texture:['redboxblock', 1],
             kills:false,
         },
         'stone': {
+            constr:new StoneBlock(),
             perma:true,
             texture:['stoneblock', 1],
             kills:false,
         },
         'death': {
+            constr:new DeathBlock(game),
             perma:true,
             texture:['deathblock', 1],
             kills:true,
         },
         'win': {
+            constr:new WinBlock(game),
             perma:true,
             texture:['winblock', 1],
             kills:false,
@@ -260,7 +309,7 @@ WorldBlocks.prototype = {
             sp.loadTexture(that.blocktypes[v.t].texture[0], that.blocktypes[v.t].texture[1]);
             sp.body.immovable = true;
             sp.body.setSize(20, 20, 2, 2);
-            sp.model = v;
+            sp.model = that.blocktypes[v.t].constr;
             that.blocks[hash(v.x, v.y)] = {k:v, v:sp};
 
             });

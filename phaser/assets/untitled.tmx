@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="20" height="20" tilewidth="21" tileheight="21">
+ <properties>
+  <property name="LevelNo" value="1"/>
+  <property name="Name" value="Beginner's Box"/>
+ </properties>
+ <tileset firstgid="1" name="blocks_tiles" tilewidth="21" tileheight="21">
+  <image source="blocks_tiles.png" width="42" height="42"/>
+ </tileset>
+ <layer name="Stones" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYmBgYKIyphYYNW/UvFHzRs0bNY+65lETAwDifwCZ
+  </data>
+ </layer>
+ <layer name="Boxes" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AU0BuwIGFq6Bns5o2C4QkAr5AASQ==
+  </data>
+ </layer>
+ <layer name="Lava" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIJRMFgBI5UwLQAADtQAEw==
+  </data>
+ </layer>
+ <layer name="Comet" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFyIAZDY+CUTAKRsEowA4ARDgADQ==
+  </data>
+ </layer>
+</map>
